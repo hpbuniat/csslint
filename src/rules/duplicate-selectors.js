@@ -13,6 +13,7 @@ CSSLint.addRule({
     init: function(parser, reporter){
         var rule = this,
             selectorStack = [];
+
         parser.addListener("startrule", function(event){
             var selectors = event.selectors,
                 selector,
@@ -21,23 +22,14 @@ CSSLint.addRule({
             for (i=0; i < selectors.length; i++){
                 selector = selectors[i];
                 if (typeof selectorStack[selector.text] === 'undefined') {
-                    selectorStack[selector.text] = 1;
+                    selectorStack[selector.text] = selector.line;
                 }
                 else {
-                    selectorStack[selector.text]++;
+                    reporter.warn("Selector \"" + selector.text + "\" was already used at line " + selectorStack[selector.text] + ".", selector.line, selector.col, rule);
                 }
             }
         });
 
-        //report the results
-        parser.addListener("endstylesheet", function(event){
-            reporter.stat("duplicate-selectors", selectorStack);
-            for (i in selectorStack) {
-                if (selectorStack[i] > 1) {
-                    reporter.rollupWarn("Selectors should be used only once, " + i + " was used " + selectorStack[i] + " times." , rule);
-                }
-            }
-        });
         delete selectorStack;
     }
 
