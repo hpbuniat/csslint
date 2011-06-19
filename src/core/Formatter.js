@@ -1,5 +1,5 @@
 /**
- * The Formatter is used to transform the messages to suite for different use-cases.
+ * The Formatter is used to transform the messages to suit for different use-cases.
  * @class Formatter
  * @constructor
  */
