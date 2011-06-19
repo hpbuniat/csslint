@@ -3,56 +3,18 @@
 /*
  * CSSLint Node.js Command Line Interface
  */
-var fs      = require("fs"),
-    sys     = require("sys"),
-    path    = require("path"),
-    CSSLint = require("./lib/csslint-node").CSSLint,
-    options = {},
-    stdout  = process.stdout;
+var fs          = require("fs"),
+    sys         = require("sys"),
+    path        = require("path"),
+    csslintNode = require("./lib/csslint-node"),
+    options     = {},
+    stdout      = process.stdout,
+    CSSLint     = csslintNode.CSSLint,
+    Formatter   = csslintNode.Formatter;
 
 //-----------------------------------------------------------------------------
 // Helper Functions
 //-----------------------------------------------------------------------------
-
-// CSSLint Node.js Writer
-var writer = {
-    messages: [],
-    filename: '',
-    content: '<?xml version="1.0" encoding="UTF-8"?><checkstyle version="css-lint">',
-    setup: function(messages, filename) {
-        this.messages = messages;
-        this.filename = filename;
-        return this;
-    },
-    console: function() {
-        var _this = this;
-        this.messages.forEach(function(message,i){
-            stdout.write("\n" + _this.filename + ":\n");
-            if (message.rollup){
-                stdout.write((i+1) + ": " + message.type + "\n");
-                stdout.write(message.message + "\n");
-            }
-            else {
-                stdout.write((i+1) + ": " + message.type + " at line " + message.line + ", col " + message.col + "\n");
-                stdout.write(message.message + "\n");
-                stdout.write(message.evidence + "\n");
-            }
-        });
-    },
-    xml: function(file) {
-        var _this = this;
-        this.content += "\n" + '<file name="' + this.filename + '">';
-        this.messages.forEach(function(message,i) {
-            _this.content += "\n" + '<error source="css-lint" severity="' + message.type + '" message="' + message.message;
-            if (!message.rollup){
-                _this.content += ' (' + message.evidence + ')" line="' + message.line + '" column="' + message.col;
-            }
-
-            _this.content += '">';
-        });
-        this.content += "\n" + '</file>';
-    }
-};
 
 //get all files in a directory
 function getFiles(dir){
@@ -93,7 +55,7 @@ function outputHelp(){
         " ",
         "Global Options",
         "  --quiet             Do not print the result.",
-        "  --xml=file          Write result as checkstyle to file.",
+        "  --checkstyle=file   Write result as checkstyle to file.",
         "  --help              Displays this information."
     ].join("\n") + "\n\n");
 }
@@ -137,9 +99,12 @@ files = files.map(function(filename){
     return path.join(process.cwd(), filename);
 });
 
-if (options.xml) {
-    try { fs.unlinkSync(options.xml); } catch(e) {}
+if (options.checkstyle) {
+    try { fs.unlinkSync(options.checkstyle); } catch(e) {}
 }
+
+var formatter = new Formatter();
+formatter.register(['checkstyle', 'text']);
 
 //-----------------------------------------------------------------------------
 // Loop over files
@@ -164,20 +129,18 @@ files.forEach(function(filepath){
             }
         });
 
-        writer.setup(messages, filename);
-        if (options.xml) {
-            writer.xml(options.xml);
-        }
-
-        if (typeof options.quiet === 'undefined') {
-            writer.console();
-        }
-
-    } else {
+        formatter.setup(messages, filename).format();
+    }
+    else {
         stdout.write("csslint: No problems found in " + filename + ".\n");
     }
 });
 
-if (options.xml) {
-    try { fs.writeFileSync(options.xml, writer.content + '</checkstyle>'); } catch(e) {}
+var aFormatted = formatter.get();
+if (options.checkstyle) {
+    try { fs.writeFileSync(options.checkstyle, aFormatted['checkstyle']); } catch(e) {}
+}
+
+if (typeof options.quiet === 'undefined') {
+    stdout.write(aFormatted['text']);
 }

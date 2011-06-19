@@ -76,6 +76,7 @@
             <fileset dir="${src.dir}/rules" includes="*.js" />
             <footer trimleading="yes">
             exports.CSSLint = CSSLint;
+            exports.Formatter = Formatter;
             </footer>
        </concat>
         
