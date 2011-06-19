@@ -9,15 +9,15 @@ var fs      = require("fs"),
     CSSLint = require("./lib/csslint-node").CSSLint,
     options = {},
     stdout  = process.stdout;
-    
+
 //-----------------------------------------------------------------------------
 // Helper Functions
 //-----------------------------------------------------------------------------
-    
+
 //get all files in a directory
 function getFiles(dir){
     var files = [];
-    
+
     try {
         fs.statSync(dir);
     } catch (ex){
@@ -29,7 +29,7 @@ function getFiles(dir){
         fs.readdirSync(stack.join("/")).forEach(function(file){
             var path = stack.concat([file]).join("/");
             var stat = fs.statSync(path);
-            
+
             if (file[0] == ".") {
                 return;
             } else if (stat.isFile() && /\.css$/.test(file)){
@@ -40,7 +40,7 @@ function getFiles(dir){
         });
         stack.pop();
     }
-    
+
     traverse(dir, []);
 
     return files;
@@ -52,7 +52,8 @@ function outputHelp(){
         "\nUsage: csslint [file|dir]*",
         " ",
         "Global Options",
-        "  --help              Displays this information."
+        "  --help              Displays this information.",
+        "  --rulset            Select a custom ruleset."
     ].join("\n") + "\n\n");
 }
 
@@ -60,15 +61,21 @@ function outputHelp(){
 // Process command line
 //-----------------------------------------------------------------------------
 
-var args    = process.argv.slice(2),  
-    arg     = args.shift(),     
-    files   = [];  
-    
+var args    = process.argv.slice(2),
+    arg     = args.shift(),
+    files   = [];
+
 while(arg){
     if (arg.indexOf("--") == 0){
-        options[arg.substring(2)] = true;
+        if (arg.indexOf("=") !== -1) {
+            var t = arg.split('=');
+            options[t[0].substring(2)] = t[1];
+        }
+        else {
+            options[arg.substring(2)] = true;
+        }
     } else {
-        
+
         //see if it's a directory or a file
         if (fs.statSync(arg).isDirectory()){
             files = files.concat(getFiles(arg));
@@ -89,6 +96,11 @@ files = files.map(function(filename){
     return path.join(process.cwd(), filename);
 });
 
+if (options.ruleset) {
+    var ruleset = require(options.ruleset).ruleset;
+    CSSLint.ruleSet(ruleset);
+}
+
 //-----------------------------------------------------------------------------
 // Loop over files
 //-----------------------------------------------------------------------------
@@ -98,11 +110,11 @@ files.forEach(function(filepath){
         filename= path.basename(filepath),
         result  = CSSLint.verify(text),
         messages= result.messages;
-        
+
     if (messages.length){
-    
+
         stdout.write("csslint: There are " + messages.length + " errors and warnings in " + filename + ".\n");
-    
+
     //rollups at the bottom
         messages.sort(function(a, b){
             if (a.rollup && !b.rollup){
@@ -113,19 +125,19 @@ files.forEach(function(filepath){
                 return 0;
             }
         });
-        
+
         messages.forEach(function(message,i){
             stdout.write("\n" + filename + ":\n");
             if (message.rollup){
                 stdout.write((i+1) + ": " + message.type + "\n");
                 stdout.write(message.message + "\n");
             } else {
-                stdout.write((i+1) + ": " + message.type + " at line " + message.line + ", col " + message.col + "\n");   
+                stdout.write((i+1) + ": " + message.type + " at line " + message.line + ", col " + message.col + "\n");
                 stdout.write(message.message + "\n");
                 stdout.write(message.evidence + "\n");
             }
         });
-        
+
     } else {
         stdout.write("csslint: No problems found in " + filename + ".\n");
     }
