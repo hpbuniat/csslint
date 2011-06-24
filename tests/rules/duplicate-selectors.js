@@ -10,7 +10,7 @@
         "Defining two rules for the same selector should result in one warning": function(){
             var result = CSSLint.verify("#id.class { color: red;} \n#id.class {color: blue;}", { "duplicate-selectors": 1 });
             Assert.areEqual(1, result.messages.length);
-
+            
             var result = CSSLint.verify("#id { color: red;} \n#id {color: blue;}\n\n#id {color: blue;}", { "duplicate-selectors": 1 });
             Assert.areEqual(2, result.messages.length);
             Assert.areEqual("warning", result.messages[0].type);
@@ -20,6 +20,9 @@
 
          "Defining one rule for a selector should not result in a warning": function(){
             var result = CSSLint.verify("#test { color: red;}", { "duplicate-selectors": 1 });
+            Assert.areEqual(0, result.messages.length);
+
+            var result = CSSLint.verify("h1, h2, h3 { font-family: Verdana; } h1 { font-size: 200% }", { "duplicate-selectors": 1 });
             Assert.areEqual(0, result.messages.length);
         }
     }));

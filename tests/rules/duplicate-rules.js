@@ -20,6 +20,10 @@
          "Defining one rule for a selector should not result in a warning": function(){
             var result = CSSLint.verify("#test { color: red;}", { "duplicate-selectors": 1 });
             Assert.areEqual(0, result.messages.length);
-        }
+
+            var result = CSSLint.verify(".class { color: red; text-decoration: underline; }\n\n .foo { color: red; text-decoration: underline; background: red;}", { "duplicate-rules": 1 });
+            Assert.areEqual(0, result.messages.length);
+
+         }
     }));
 })();

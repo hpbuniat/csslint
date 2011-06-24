@@ -22,7 +22,9 @@ CSSLint.addRule({
             for (i=0; i < selectors.length; i++){
                 selector = selectors[i];
                 if (typeof selectorStack[selector.text] === 'undefined') {
-                    selectorStack[selector.text] = selector.line;
+                    if (rule.isTagSelector(selector) !== true) {
+                        selectorStack[selector.text] = selector.line;
+                    }
                 }
                 else {
                     reporter.warn("Selector \"" + selector.text + "\" was already used at line " + selectorStack[selector.text] + ".", selector.line, selector.col, rule);
@@ -31,6 +33,11 @@ CSSLint.addRule({
         });
 
         delete selectorStack;
+    },
+
+    // helper to check for plain tag-selectors
+    isTagSelector: function(selector) {
+        return (selector.parts.length === 1 && selector.text.match(/^\w+$/g)) ? true : false;
     }
 
 });
