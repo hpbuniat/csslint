@@ -12,7 +12,7 @@ By default, CSSLint shows any parsing errors. Parsing errors usually mean you mi
 
 ### Don't use adjoining classes
 
-Adjoining classes look like `.foo.bar`. While technically allowed in CSS, these aren't handled properly by Internet Explorer 7 and earlier.
+Adjoining classes look like `.foo.bar`. While technically allowed in CSS, these aren't handled properly by Internet Explorer 6 and earlier.
 
 ### Remove empty rules
 
@@ -36,7 +36,7 @@ Even though you can define any group of properties together in a CSS rule, some 
 
 Removed the ignored or problematic properties decreases file size and improves performance.
 
-### Avoid using to many !important declarations
+### Avoid using too many !important declarations
 
 Using `!important` overides any cascaded rule and may lead to specificity war. CSSLint checks if you've used `!important`, and if so, displays a warning. If there's at least 10 `!important` declaration in your code CSSLint displays an error.
 
@@ -48,7 +48,7 @@ Using `float` for layout isn't a great idea, but sometimes you have to. CSSLint 
 
 Web fonts are growing in popularity and use of `@font-face` is on the rise. However, using web fonts comes with performance implications as font files can be quite large and some browsers block rendering while downloading them. For this reason, CSSLint will warn you when there are more than five web fonts in a style sheet.
 
-### Don't use too may font-size declarations
+### Don't use too many font-size declarations
 
 A site is typically made up of a finite number of font treatments, including font size. If you have 10 or more font sizes specified, you probably want to refactor into a standard set of font size classes that can be used in markup.
 
@@ -95,6 +95,10 @@ When using vendor-prefixed properties such as `-moz-border-radius`, make sure to
 
 Right now, there is no standard CSS gradient implementation, which means using CSS gradients in a cross-browser way requires using many different vendor-prefixed versions. CSSLint warns when a rule with a CSS gradient doesn't have gradients for all supporting browsers. 
 
+### Include all compatible vendor prefixes to reach a wider range of users
+
+Most CSS3 properties have vendor-prefixed equivalents for multiple vendors, including Firefox (-moz), Safari/Chrome (-webkit), Opera (-o), and Internet Explorer (-ms). Including all compatible vendor prefixes will give a consistent appearance for a wider range of users.
+
 ### Avoid selectors that look like regular expressions
 
 CSS3 adds complex attribute selectors such as `~=` that are slow. When using attribute selectors, don't use the complex equality operators to avoid performance penalties.
@@ -102,6 +106,27 @@ CSS3 adds complex attribute selectors such as `~=` that are slow. When using att
 ### Beware of broken box models
 
 Borders and padding add space outside of an element's content. Setting `width` or `height` along with borders and padding is usually a mistake because you won't get the visual result you're looking for. CSSLint warns when a rule uses `width` or `height` in addition to padding and/or border.
+
+### Avoid @import
+
+The `@import` command shouldn't be used because it prevent parallel downloads in some browsers (see http://www.stevesouders.com/blog/2009/04/09/dont-use-import/).
+
+### Duplicate Properties
+
+When you include the same property twice, it may be intentional (to provide a fallback) or unintentional (copy-paste error). If duplicate properties are found one after the other with different values, this is okay. For example:
+
+    .foo {
+        background: #fff;
+        background: rgba(255, 255, 255, 0.5);
+    }
+    
+However, if the properties either have the same value or are located at different spots in the rule, this results in a warning. For example:
+
+    .foo {
+        background: #fff;
+        color: #000;
+        background: rgba(255, 255, 255, 0.5);
+    }   
 
 ## Contributors
 
@@ -112,5 +137,7 @@ Borders and padding add space outside of an element's content. Setting `width` o
 
 ### Contributors
 
-1. Samori Gorse (Rules)
-1. Eitan Konigsburg (Rhino CLI)
+1. Samori Gorse, https://twitter.com/shinuza (Rules, Non-zero Exit Code for CLI)
+1. Eitan Konigsburg, https://twitter.com/eitanmk (Rhino CLI)
+1. Ben Barber (Compatible Vendor Prefix Rule)
+1. Eric Wendelin, http://eriwen.com (Output formatters)
