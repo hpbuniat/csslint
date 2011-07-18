@@ -6,6 +6,7 @@ CSSLint is a tool to help point out problems with your CSS code. It does basic s
 
 ## The CSSLint Rules
 
+
 ### Parsing errors should be fixed
 
 By default, CSSLint shows any parsing errors. Parsing errors usually mean you mistyped a character and may cause the browser to drop your rule or a property. Parsing errors are presented as errors by CSSLint, the most important issues to fix.
@@ -13,6 +14,10 @@ By default, CSSLint shows any parsing errors. Parsing errors usually mean you mi
 ### Don't use adjoining classes
 
 Adjoining classes look like `.foo.bar`. While technically allowed in CSS, these aren't handled properly by Internet Explorer 6 and earlier.
+
+### Don't use text indent to hide text if you need to support RTL
+
+Negative text indent doesn't play nicely with right to left oriented languages like Arabic. If your sight needs to support RTL, you should choose a different text hiding method. 
 
 ### Remove empty rules
 
@@ -128,6 +133,40 @@ However, if the properties either have the same value or are located at differen
         background: rgba(255, 255, 255, 0.5);
     }   
 
+### Universal Selector
+
+The universal selector (*) selects all elements and can create performance issues when used as the far-right part of a selector. For example, this type of rule is not preferable:
+
+    .foo * {
+        background: #fff;
+        color: #000;
+        background: rgba(255, 255, 255, 0.5);
+    }
+    
+This requires the browser to match all elements first, and then go up the DOM tree to find an element with a class of `.foo`. Generally, it's best to avoid using the universal selector.
+
+## Command-line Interface
+
+You can run CSSLint on a file with:
+
+    csslint [options] path/to/file.css
+
+You can see usage:
+
+    csslint --help
+
+You can customize which rules are applied with the `--rules` option (default is all rules):
+
+    csslint --rules=adjoining-classes,other-rule file.css
+
+You can customize the output format with the `--format` option ("text", "compact", and "lint-xml" are available):
+
+    csslint --format=lint-xml file.css
+
+You can check the version of CSSLint with:
+
+    csslint --version
+
 ## Contributors
 
 ### Creators
@@ -141,3 +180,4 @@ However, if the properties either have the same value or are located at differen
 1. Eitan Konigsburg, https://twitter.com/eitanmk (Rhino CLI)
 1. Ben Barber (Compatible Vendor Prefix Rule)
 1. Eric Wendelin, http://eriwen.com (Output formatters)
+**
