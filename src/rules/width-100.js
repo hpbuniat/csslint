@@ -26,13 +26,13 @@
             var name = event.property.text.toLowerCase(),
                 value = event.value;
 
-            if (name == "width" && value == "100%"){
+            if (name === "width" && value === "100%"){
                 width100 = event.property;
-            } else if (name == "box-sizing" || /\-(?:webkit|ms|moz)\-box-sizing/.test(name)){  //means you know what you're doing
+            } else if (name === "box-sizing" || /\-(?:webkit|ms|moz)\-box-sizing/.test(name)){  //means you know what you're doing
                 boxsizing = true;
             }
         });
-        
+
         parser.addListener("endrule", function(){
             if (width100 && !boxsizing){
                 reporter.warn("Elements with a width of 100% may not appear as you expect inside of other elements.", width100.line, width100.col, rule);

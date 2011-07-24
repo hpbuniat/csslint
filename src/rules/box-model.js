@@ -1,5 +1,5 @@
 /*
- * Rule: Don't use width or height when using padding or border. 
+ * Rule: Don't use width or height when using padding or border.
  */
 CSSLint.addRule({
 
@@ -37,17 +37,17 @@ CSSLint.addRule({
 
         parser.addListener("property", function(event){
             var name = event.property.text.toLowerCase();
-            
+
             if (heightProperties[name] || widthProperties[name]){
-                if (!/^0\S*$/.test(event.value) && !(name == "border" && event.value == "none")){
+                if (!/^0\S*$/.test(event.value) && !(name === "border" && event.value === "none")){
                     properties[name] = { line: event.property.line, col: event.property.col };
                 }
             } else {
-                if (name == "width" || name == "height"){
+                if (name === "width" || name === "height"){
                     properties[name] = 1;
                 }
             }
-            
+
         });
 
         parser.addListener("endrule", function(){

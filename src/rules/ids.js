@@ -29,14 +29,14 @@ CSSLint.addRule({
                     if (part instanceof parserlib.css.SelectorPart){
                         for (k=0; k < part.modifiers.length; k++){
                             modifier = part.modifiers[k];
-                            if (modifier.type == "id"){
+                            if (modifier.type === "id"){
                                 idCount++;
                             }
                         }
                     }
                 }
 
-                if (idCount == 1){
+                if (idCount === 1){
                     reporter.warn("Don't use IDs in selectors.", selector.line, selector.col, rule);
                 } else if (idCount > 1){
                     reporter.warn(idCount + " IDs in the selector, really?", selector.line, selector.col, rule);

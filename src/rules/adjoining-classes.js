@@ -28,7 +28,7 @@ CSSLint.addRule({
                         classCount = 0;
                         for (k=0; k < part.modifiers.length; k++){
                             modifier = part.modifiers[k];
-                            if (modifier.type == "class"){
+                            if (modifier.type === "class"){
                                 classCount++;
                             }
                             if (classCount > 1){

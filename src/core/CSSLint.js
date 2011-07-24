@@ -9,7 +9,7 @@ var CSSLint = (function(){
     var rules      = [],
         formatters = [],
         api        = new parserlib.util.EventTarget();
-        
+
     api.version = "@VERSION@";
 
     //-------------------------------------------------------------------------
@@ -47,7 +47,7 @@ var CSSLint = (function(){
         // formatters.push(formatter);
         formatters[formatter.id] = formatter;
     };
-    
+
     /**
      * Retrieves a formatter for use.
      * @param {String} formatId The name of the format to retrieve.
@@ -57,7 +57,7 @@ var CSSLint = (function(){
     api.getFormatter = function(formatId){
         return formatters[formatId];
     };
-    
+
     /**
      * Formats the results in a particular format for a single file.
      * @param {Object} result The results returned from CSSLint.verify().
@@ -69,16 +69,16 @@ var CSSLint = (function(){
     api.format = function(results, filename, formatId) {
         var formatter = this.getFormatter(formatId),
             result = null;
-            
+
         if (formatter){
             result = formatter.startFormat();
             result += formatter.formatResults(results, filename);
             result += formatter.endFormat();
         }
-        
+
         return result;
-    }    
-    
+    };
+
     /**
      * Indicates if the given format is supported.
      * @param {String} formatId The ID of the format to check.

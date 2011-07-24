@@ -2,7 +2,7 @@
  * Rule: Include all compatible vendor prefixes to reach a wider
  * range of users.
  */
-/*global CSSLint*/ 
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
@@ -155,8 +155,8 @@ CSSLint.addRule({
                         for (i = 0, len = full.length; i < len; i++) {
                             item = full[i];
                             if (actual.indexOf(item) === -1) {
-                                propertiesSpecified = (actual.length === 1) ? actual[0] : (actual.length == 2) ? actual.join(" and ") : actual.join(", ");
-                                reporter.warn("The property " + item + " is compatible with " + propertiesSpecified + " and should be included as well.", event.selectors[0].line, event.selectors[0].col, rule); 
+                                propertiesSpecified = (actual.length === 1) ? actual[0] : (actual.length === 2) ? actual.join(" and ") : actual.join(", ");
+                                reporter.warn("The property " + item + " is compatible with " + propertiesSpecified + " and should be included as well.", event.selectors[0].line, event.selectors[0].col, rule);
                             }
                         }
 

@@ -1,10 +1,10 @@
 //print for rhino and nodejs
-if(typeof print == "undefined") {
+if(typeof print === "undefined") {
     var print = console.log;
 }
 
 //readFile for rhino and nodejs
-if(typeof readFile == "undefined") {
+if(typeof readFile === "undefined") {
     var readFile = function(filepath) {
         var fs = require("fs");
         return fs.readFileSync(filepath, "utf-8");
@@ -20,14 +20,14 @@ var pluckByType = function(messages, type){
 
 function gatherRules(options){
     var ruleset;
-    
+
     if (options.rules){
         ruleset = {};
         options.rules.split(",").forEach(function(value){
             ruleset[value] = 1;
         });
     }
-    
+
     return ruleset;
 }
 
@@ -54,7 +54,7 @@ var processFile = function(filename, options) {
             exitCode = 1;
         }
     }
-    
+
     return exitCode;
 };
 
@@ -87,7 +87,7 @@ function processFiles(files, options){
     } else {
         if (!CSSLint.hasFormat(formatId)){
             print("csslint: Unknown format '" + formatId + "'. Cannot proceed.");
-            exitCode = 1; 
+            exitCode = 1;
         } else {
             formatter = CSSLint.getFormatter(formatId);
             print(formatter.startFormat());

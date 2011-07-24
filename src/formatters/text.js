@@ -2,11 +2,11 @@ CSSLint.addFormatter({
     //format information
     id: "text",
     name: "Plain Text",
-    
+
     startFormat: function(){
         return "";
     },
-    
+
     endFormat: function(){
         return "";
     },
@@ -16,13 +16,13 @@ CSSLint.addFormatter({
         if (messages.length === 0) {
             return "\n\ncsslint: No errors in " + filename + ".";
         }
-        
+
         output = "\n\ncsslint: There are " + messages.length  +  " problems in " + filename + ".";
         var pos = filename.lastIndexOf("/"),
             shortFilename = filename;
 
-        if (pos == -1){
-            pos = filename.lastIndexOf("\\");       
+        if (pos === -1){
+            pos = filename.lastIndexOf("\\");
         }
         if (pos > -1){
             shortFilename = filename.substring(pos+1);
@@ -50,7 +50,7 @@ CSSLint.addFormatter({
                 output += "\n" + message.evidence;
             }
         });
-    
+
         return output;
     }
 });

@@ -1,7 +1,6 @@
 /*
  * CSSLint Node.js Command Line Interface
  */
-
 var fs      = require("fs"),
     path    = require("path"),
     CSSLint = require("./lib/csslint-node").CSSLint,
@@ -27,8 +26,8 @@ function getFiles(dir){
         fs.readdirSync(stack.join("/")).forEach(function(file){
             var path = stack.concat([file]).join("/");
             var stat = fs.statSync(path);
-            
-            if (file[0] == ".") {
+
+            if (file[0] === ".") {
                 return;
             } else if (stat.isFile() && /\.css$/.test(file)){
                 files.push(path);
@@ -54,10 +53,10 @@ var args     = process.argv.slice(2),
     files    = [];
 
 while(arg){
-    if (arg.indexOf("--") == 0){
+    if (arg.indexOf("--") === 0){
         argName = arg.substring(2);
         options[argName] = true;
-        
+
         if (argName.indexOf("rules=") > -1){
             options.rules = argName.substring(argName.indexOf("=") + 1);
         } else if (argName.indexOf("format=") > -1) {
@@ -74,7 +73,7 @@ while(arg){
     arg = args.shift();
 }
 
-if (options.help || arguments.length == 0){
+if (options.help || arguments.length === 0){
     outputHelp();
     process.exit(0);
 }

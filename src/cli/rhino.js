@@ -25,7 +25,7 @@ function getFiles(dir) {
     traverse(dir);
 
     return files;
-};
+}
 
 //-----------------------------------------------------------------------------
 // Process command line
@@ -38,10 +38,10 @@ var args     = Array.prototype.slice.call(arguments),
     files    = [];
 
 while(arg){
-    if (arg.indexOf("--") == 0){
+    if (arg.indexOf("--") === 0){
         argName = arg.substring(2);
         options[argName] = true;
-        
+
         if (argName.indexOf("rules=") > -1){
             options.rules = argName.substring(argName.indexOf("=") + 1);
         } else if (argName.indexOf("format=") > -1) {
@@ -49,7 +49,7 @@ while(arg){
         }
     } else {
         var curFile = new File(arg);
-        
+
         //see if it's a directory or a file
         if (curFile.isDirectory()){
             files = files.concat(getFiles(curFile));
@@ -60,7 +60,7 @@ while(arg){
     arg = args.shift();
 }
 
-if (options.help || arguments.length == 0){
+if (options.help || arguments.length === 0){
     outputHelp();
     quit(0);
 }
@@ -69,7 +69,5 @@ if (options.version){
     print("v" + CSSLint.version);
     quit(0);
 }
-
-
 
 quit(processFiles(files,options));

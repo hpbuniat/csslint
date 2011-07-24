@@ -2,11 +2,11 @@ CSSLint.addFormatter({
     //format information
     id: "compact",
     name: "Compact, 'porcelain' format",
-    
+
     startFormat: function(){
         return "";
     },
-    
+
     endFormat: function(){
         return "";
     },
@@ -21,8 +21,8 @@ CSSLint.addFormatter({
             return shortFilename + ": Lint Free!";
         }
 
-        if (pos == -1){
-            pos = filename.lastIndexOf("\\");       
+        if (pos === -1){
+            pos = filename.lastIndexOf("\\");
         }
         if (pos > -1){
             shortFilename = filename.substring(pos+1);
@@ -43,11 +43,11 @@ CSSLint.addFormatter({
             if (message.rollup) {
                 output += shortFilename + ": " + message.message + "\n";
             } else {
-                output += shortFilename + ": " + "line " + message.line + 
+                output += shortFilename + ": " + "line " + message.line +
                     ", col " + message.col + ", " + message.message + "\n";
             }
         });
-    
+
         return output;
     }
 });

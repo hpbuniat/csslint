@@ -1,5 +1,5 @@
 /*
- * Rule: Certain properties don't play well with certain display values. 
+ * Rule: Certain properties don't play well with certain display values.
  * - float should not be used with inline-block
  * - height, width, margin-top, margin-bottom, float should not be used with inline
  * - vertical-align should not be used with block
@@ -44,7 +44,7 @@ CSSLint.addRule({
             var name = event.property.text.toLowerCase();
 
             if (propertiesToCheck[name]){
-                properties[name] = { value: event.value.text, line: event.property.line, col: event.property.col };                    
+                properties[name] = { value: event.value.text, line: event.property.line, col: event.property.col };
             }
         });
 
@@ -60,7 +60,7 @@ CSSLint.addRule({
                         reportProperty("width", display);
                         reportProperty("margin", display);
                         reportProperty("margin-top", display);
-                        reportProperty("margin-bottom", display);              
+                        reportProperty("margin-bottom", display);
                         reportProperty("float", display, "display:inline has no effect on floated elements (but may be used to fix the IE6 double-margin bug).");
                         break;
 
@@ -76,7 +76,7 @@ CSSLint.addRule({
 
                     default:
                         //margin, float should not be used with table
-                        if (display.indexOf("table-") == 0){
+                        if (display.indexOf("table-") === 0){
                             reportProperty("margin", display);
                             reportProperty("margin-left", display);
                             reportProperty("margin-right", display);
@@ -88,13 +88,13 @@ CSSLint.addRule({
                         //otherwise do nothing
                 }
             }
-          
+
         });
 
 
         function reportProperty(name, display, msg){
             if (properties[name]){
-                if (!(typeof propertiesToCheck[name] == "string") || properties[name].value.toLowerCase() != propertiesToCheck[name]){
+                if (!(typeof propertiesToCheck[name] === "string") || properties[name].value.toLowerCase() != propertiesToCheck[name]){
                     reporter.warn(msg || name + " can't be used with display: " + display + ".", properties[name].line, properties[name].col, rule);
                 }
             }
