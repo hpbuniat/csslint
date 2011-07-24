@@ -8,7 +8,7 @@ if(typeof readFile === "undefined") {
     var readFile = function(filepath) {
         var fs = require("fs");
         return fs.readFileSync(filepath, "utf-8");
-    }
+    };
 }
 
 //filter messages by type
