@@ -12,15 +12,16 @@ CSSLint.addFormatter({
     },
 
     formatResults: function(results, filename) {
-        var messages = results.messages;
+        var messages = results.messages,
+            output = "",
+            pos = filename.lastIndexOf("/"),
+            shortFilename = filename;
+
         if (messages.length === 0) {
             return "\n\ncsslint: No errors in " + filename + ".";
         }
 
         output = "\n\ncsslint: There are " + messages.length  +  " problems in " + filename + ".";
-        var pos = filename.lastIndexOf("/"),
-            shortFilename = filename;
-
         if (pos === -1){
             pos = filename.lastIndexOf("\\");
         }
