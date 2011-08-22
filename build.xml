@@ -6,6 +6,7 @@
     <!-- the directories containing the source files -->
     <property name="src.dir" value="./src" />
     <property name="npm.dir" value="./npm" />
+    <property name="docs.dir" value="./docs" />
     <property name="tests.dir" value="./tests" />
     
     <!-- the directories and files to output to -->
@@ -78,8 +79,19 @@
             })();
             </footer>
             
-        </concat>        
-    </target>   
+        </concat>
+    </target>
+    
+    <!-- build the docs -->
+    <target name="build.docs">
+    
+        <delete dir="${build.dir}/docs"/>
+        <mkdir dir="${build.dir}/docs"/>
+        
+        <copy todir="${build.dir}/docs">
+            <fileset dir="${docs.dir}" includes="**/*" />
+        </copy>      
+    </target>    
     
     <!-- build the web worker library -->
     <target name="build.worker">    
@@ -125,7 +137,7 @@
            <header trimleading="yes">#!/usr/bin/env node
             /* Build time: ${RIGHT_NOW} */
             </header>
-           <filelist dir="${src.dir}/cli" files="util.js,node.js" />
+           <filelist dir="${src.dir}/cli" files="common.js,node.js" />
        </concat>
        <copy file="${build.dir}/${node.build.file}" todir="${build.npm.dir}/lib"/>
        
@@ -144,7 +156,7 @@
     <target name="build.rhino" depends="build.core">
         <concat destfile="${build.dir}/${rhino.build.file}" fixlastline="true">
             <filelist dir="${build.dir}" files="${core.build.file}" />
-            <filelist dir="${src.dir}/cli" files="util.js,rhino.js" />
+            <filelist dir="${src.dir}/cli" files="common.js,rhino.js" />
         </concat>
     </target>    
     
@@ -172,6 +184,6 @@
     </target>
     
     <!-- Build all files -->
-    <target name="all" depends="clean,build.core,build.worker,build.node,build.tests,build.rhino"/>
+    <target name="all" depends="clean,build.core,build.worker,build.node,build.tests,build.rhino,build.docs"/>
 
 </project>
