@@ -31,6 +31,15 @@ function gatherRules(options){
     return ruleset;
 }
 
+
+function listRules(){
+    print("");
+    var rules = CSSLint.getRules();
+    rules.forEach(function(rule){
+        print(rule.id + "\n" + rule.desc + "\n");
+    });
+}
+
 /**
  * Given a file name and options, run verification and print formatted output.
  * @param {String} name of file to process
@@ -65,10 +74,11 @@ function outputHelp(){
         " ",
         "Global Options",
         "  --help                 Displays this information.",
-        "  --rules=<rule[,rule]+> Indicate which rules to include.",
         "  --format=<format>      Indicate which format to use for output.",
+        "  --list-rules           Outputs all of the rules available.",
+        "  --rules=<rule[,rule]+> Indicate which rules to include.",
         "  --version              Outputs the current version number."
-    ].join("\n") + "\n\n");
+    ].join("\n") + "\n");
 }
 
 /**
@@ -80,7 +90,8 @@ function outputHelp(){
 function processFiles(files, options){
     var exitCode = 0,
         formatId = options.format || "text",
-        formatter;
+        formatter,
+        output;
     if (!files.length) {
         print("No files specified.");
         exitCode = 1;
@@ -90,7 +101,11 @@ function processFiles(files, options){
             exitCode = 1; 
         } else {
             formatter = CSSLint.getFormatter(formatId);
-            print(formatter.startFormat());
+            
+            output = formatter.startFormat();
+            if (output){
+                print(output);
+            }
 
             files.forEach(function(file){
                 if (exitCode == 0) {
@@ -100,7 +115,10 @@ function processFiles(files, options){
                 }
             });
             
-            print(formatter.endFormat());
+            output = formatter.endFormat();
+            if (output){
+                print(output);
+            }
         }
     }
     return exitCode;
