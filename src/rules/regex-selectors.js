@@ -1,6 +1,7 @@
 /*
  * Rule: Selectors that look like regular expressions are slow and should be avoided.
  */
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
@@ -24,7 +25,7 @@ CSSLint.addRule({
                 selector = selectors[i];
                 for (j=0; j < selector.parts.length; j++){
                     part = selector.parts[j];
-                    if (part instanceof parserlib.css.SelectorPart){
+                    if (part.type == parser.SELECTOR_PART_TYPE){
                         for (k=0; k < part.modifiers.length; k++){
                             modifier = part.modifiers[k];
                             if (modifier.type == "attribute"){

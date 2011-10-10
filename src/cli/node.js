@@ -2,6 +2,9 @@
  * CSSLint Node.js Command Line Interface
  */
 
+/*jshint node:true*/
+/*global cli*/
+
 var fs      = require("fs"),
     path    = require("path"),
     CSSLint = require("./lib/csslint-node").CSSLint;
@@ -9,10 +12,21 @@ var fs      = require("fs"),
 cli({
     args: process.argv.slice(2),
 
-    print: console.log,
+    print: function(message){
+        fs.writeSync(1, message + "\n");
+    },
     
     quit: function(code){
-        process.exit(code || 0);
+    
+        //Workaround for https://github.com/joyent/node/issues/1669
+        var flushed = process.stdout.flush();
+        if (!flushed) {
+            process.once("drain", function () {
+                process.exit(code || 0);
+            });
+        } else {
+            process.exit(code || 0);
+        }
     },
     
     isDirectory: function(name){
@@ -55,8 +69,17 @@ cli({
             return path.resolve(process.cwd(), filename);
         });
     },
+
+    getWorkingDirectory: function() {
+        return process.cwd();
+    },
     
+    getFullPath: function(filename){
+        return path.resolve(process.cwd(), filename);
+    },
+
     readFile: function(filename){
         return fs.readFileSync(filename, "utf-8");    
     }
 });
+

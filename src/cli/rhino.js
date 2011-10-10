@@ -1,6 +1,8 @@
 /*
  * CSSLint Rhino Command Line Interface
  */
+/*jshint rhino:true*/
+/*global cli, File*/
 
 importPackage(java.io);
 
@@ -26,7 +28,7 @@ cli({
                     traverse(file);
                 }
             });
-        };
+        }
 
         traverse(new File(dir));
 
@@ -36,7 +38,14 @@ cli({
     fixFilenames: function(files){
         return files;
     },
-    
-    readFile: readFile
 
+    getWorkingDirectory: function() {
+        return (new File(".")).getCanonicalPath();
+    },
+    
+    getFullPath: function(filename){
+        return (new File(filename)).getCanonicalPath();
+    },
+
+    readFile: readFile
 });

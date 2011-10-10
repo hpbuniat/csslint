@@ -1,7 +1,7 @@
 <project name="csslint" default="build.all">
 
     <!-- version number -->
-    <property name="csslint.version" value="0.5.0" />
+    <property name="csslint.version" value="0.6.1" />
 
     <!-- the directories containing the source files -->
     <property name="src.dir" value="./src" />
@@ -57,11 +57,10 @@
             <arg line="tag"/>
         </exec>      
         <script language="javascript"><![CDATA[
-            //get the two most recent tags to get the diff
+            //get the most recent tag to get the diff
             var tags = csslint.getProperty("git.tag").replace("\r", "").split("\n"),
-                lastTag = tags[tags.length-1],
-                priorTag = tags[tags.length-2];
-            csslint.setProperty("git.log.range", priorTag + ".." + lastTag);
+                lastTag = tags[tags.length-1];
+            csslint.setProperty("git.log.range", lastTag + "..HEAD");
         ]]></script>
         
         <!-- git log -pretty=format:'* %s (%an)' v0.4.0..v0.5.0-->
@@ -73,6 +72,7 @@
             <header trimleading="yes">${SIMPLE_DATE} - v${csslint.version}
             
             ${git.changelog}
+            
             </header>
             <fileset dir="." includes="CHANGELOG" />
         </concat>
@@ -83,16 +83,26 @@
     </target>
     
     <!-- validate JS files with JSHint -->
-    <target name="lint">
-       
+    <target name="lint">       
         <apply executable="java" parallel="false" failonerror="true">
             <fileset dir="${src.dir}" includes="**/*.js" />
             <arg line="-jar"/>
             <arg path="${lib.dir}/js.jar"/>
             <arg path="${lib.dir}/jshint.js" />
             <srcfile/>
-        </apply>      
-        
+            <arg line="curly=true,forin=true,latedef=true,noempty=true,undef=true,rhino=false"/>
+        </apply>              
+    </target>
+
+    <!-- run tests on the command line -->
+    <target name="test">       
+        <exec executable="java" failonerror="true">
+            <arg line="-jar"/>
+            <arg path="${lib.dir}/js.jar"/>
+            <arg path="${lib.dir}/yuitest-rhino-cli.js" />
+            <arg path="${build.dir}/${core.build.file}" />
+            <arg path="${build.dir}/${tests.build.file}" />
+        </exec>              
     </target>
 
     <!-- build the core library -->
@@ -196,7 +206,7 @@
     </target>    
     
     <!-- Create a release with version number embedded -->
-    <target name="release" depends="build.all,changelog.update">
+    <target name="release" depends="lint,test,build.all,changelog.update">
         <delete dir="${release.dir}" />
         <mkdir dir="${release.dir}"/>
         <copy todir="${release.dir}">
@@ -209,7 +219,7 @@
     
     <!-- Update CSS parser with the latest -->
     <target name="parser.update">
-        <get src="${parser.url}" dest="${lib.dir}/" />
+        <get src="${parser.url}" dest="${lib.dir}/${parserlib.js}" />
     </target>
     
     <!-- Update JSHint with the latest -->

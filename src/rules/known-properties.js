@@ -2,6 +2,7 @@
  * Rule: Properties should be known (listed in CSS3 specification) or
  * be a vendor-prefixed property.
  */
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
@@ -294,7 +295,10 @@ CSSLint.addRule({
                 
                 //IE
                 "filter": 1,
-                "zoom": 1
+                "zoom": 1,
+                
+                //@font-face
+                "src": 1
             };
 
         parser.addListener("property", function(event){

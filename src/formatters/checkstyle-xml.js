@@ -1,17 +1,33 @@
+/*global CSSLint*/
 CSSLint.addFormatter({
     //format information
     id: "checkstyle-xml",
     name: "Checkstyle XML format",
 
+    /**
+     * Return opening root XML tag.
+     * @return {String} to prepend before all results
+     */
     startFormat: function(){
         return "<?xml version=\"1.0\" encoding=\"utf-8\"?><checkstyle>";
     },
 
+    /**
+     * Return closing root XML tag.
+     * @return {String} to append after all results
+     */
     endFormat: function(){
         return "</checkstyle>";
     },
 
-    formatResults: function(results, filename) {
+    /**
+     * Given CSS Lint results for a file, return output for this format.
+     * @param results {Object} with error and warning messages
+     * @param filename {String} relative file path
+     * @param options {Object} (UNUSED for now) specifies special handling of output
+     * @return {String} output for results
+     */
+    formatResults: function(results, filename, options) {
         var messages = results.messages,
             output = [];
 
@@ -50,9 +66,8 @@ CSSLint.addFormatter({
         if (messages.length > 0) {
             output.push("<file name=\""+filename+"\">");
             messages.forEach(function (message, i) {
-                if (message.rollup) {
-                    //ignore rollups for now
-                } else {
+                //ignore rollups for now
+                if (!message.rollup) {
                   output.push("<error line=\"" + message.line + "\" column=\"" + message.col + "\" severity=\"" + message.type + "\"" +
                       " message=\"" + escapeSpecialCharacters(message.message) + "\" source=\"" + generateSource(message.rule) +"\"/>");
                 }
