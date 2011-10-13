@@ -1,30 +1,52 @@
+/*global CSSLint*/
 CSSLint.addFormatter({
     //format information
     id: "lint-xml",
     name: "Lint XML format",
-    
+
+    /**
+     * Return opening root XML tag.
+     * @return {String} to prepend before all results
+     */
     startFormat: function(){
         return "<?xml version=\"1.0\" encoding=\"utf-8\"?><lint>";
     },
 
+    /**
+     * Return closing root XML tag.
+     * @return {String} to append after all results
+     */
     endFormat: function(){
         return "</lint>";
     },
-    
-    formatResults: function(results, filename) {
+
+    /**
+     * Given CSS Lint results for a file, return output for this format.
+     * @param results {Object} with error and warning messages
+     * @param filename {String} relative file path
+     * @param options {Object} (UNUSED for now) specifies special handling of output
+     * @return {String} output for results
+     */
+    formatResults: function(results, filename, options) {
         var messages = results.messages,
             output = [];
 
         /**
-         * Replace double-quotes with single quotes for XML output
+         * Replace special characters before write to output.
+         *
+         * Rules:
+         *  - single quotes is the escape sequence for double-quotes
+         *  - &lt; is the escape sequence for <
+         *  - &gt; is the escape sequence for >
+         * 
          * @param {String} message to escape
          * @return escaped message as {String}
          */
-        var replaceDoubleQuotes = function(str) {
+        var escapeSpecialCharacters = function(str) {
             if (!str || str.constructor !== String) {
                 return "";
             }
-            return str.replace(/\"/g, "'");
+            return str.replace(/\"/g, "'").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         };
 
         if (messages.length > 0) {
@@ -32,10 +54,10 @@ CSSLint.addFormatter({
             output.push("<file name=\""+filename+"\">");
             messages.forEach(function (message, i) {
                 if (message.rollup) {
-                    output.push("<issue severity=\"" + message.type + "\" reason=\"" + replaceDoubleQuotes(message.message) + "\" evidence=\"" + replaceDoubleQuotes(message.evidence) + "\"/>");
+                    output.push("<issue severity=\"" + message.type + "\" reason=\"" + escapeSpecialCharacters(message.message) + "\" evidence=\"" + escapeSpecialCharacters(message.evidence) + "\"/>");
                 } else {
                     output.push("<issue line=\"" + message.line + "\" char=\"" + message.col + "\" severity=\"" + message.type + "\"" +
-                        " reason=\"" + replaceDoubleQuotes(message.message) + "\" evidence=\"" + replaceDoubleQuotes(message.evidence) + "\"/>");
+                        " reason=\"" + escapeSpecialCharacters(message.message) + "\" evidence=\"" + escapeSpecialCharacters(message.evidence) + "\"/>");
                 }
             });
             output.push("</file>");

@@ -1,75 +1,51 @@
 /*
  * CSSLint Rhino Command Line Interface
  */
+/*jshint rhino:true*/
+/*global cli, File*/
 
 importPackage(java.io);
 
-//-----------------------------------------------------------------------------
-// Helper Functions
-//-----------------------------------------------------------------------------
+cli({
+    args: arguments,
+    print: print,
+    quit: quit,
+    
+    isDirectory: function(name){
+        var dir = new File(name);
+        return dir.isDirectory();
+    },
+    
+    getFiles: function(dir){
+        var files = [];
 
-function getFiles(dir) {
-    var files = [];
-
-    var traverse = function (dir) {
-        var dirList = dir.listFiles();
-        dirList.forEach(function (file) {
-            if (/\.css$/.test(file)) {
-                files.push(file.toString());
-            } else if (file.isDirectory()) {
-                traverse(file);
-            }
-        });
-    };
-
-    traverse(dir);
-
-    return files;
-}
-
-//-----------------------------------------------------------------------------
-// Process command line
-//-----------------------------------------------------------------------------
-
-var args     = Array.prototype.slice.call(arguments),
-    argName,
-    arg      = args.shift(),
-    options  = {},
-    files    = [];
-
-while(arg){
-    if (arg.indexOf("--") === 0){
-        argName = arg.substring(2);
-        options[argName] = true;
-        
-        if (argName.indexOf("rules=") > -1){
-            options.rules = argName.substring(argName.indexOf("=") + 1);
-        } else if (argName.indexOf("format=") > -1) {
-            options.format = argName.substring(argName.indexOf("=") + 1);
+        function traverse(dir) {
+            var dirList = dir.listFiles();
+            dirList.forEach(function (file) {
+                if (/\.css$/.test(file)) {
+                    files.push(file.toString());
+                } else if (file.isDirectory()) {
+                    traverse(file);
+                }
+            });
         }
-    } else {
-        var curFile = new File(arg);
-        
-        //see if it's a directory or a file
-        if (curFile.isDirectory()){
-            files = files.concat(getFiles(curFile));
-        } else {
-            files.push(arg);
-        }
-    }
-    arg = args.shift();
-}
 
-if (options.help || arguments.length === 0){
-    outputHelp();
-    quit(0);
-}
+        traverse(new File(dir));
 
-if (options.version){
-    print("v" + CSSLint.version);
-    quit(0);
-}
+        return files;    
+    },
+    
+    fixFilenames: function(files){
+        return files;
+    },
 
+    getWorkingDirectory: function() {
+        return (new File(".")).getCanonicalPath();
+    },
+    
+    getFullPath: function(filename){
+        return (new File(filename)).getCanonicalPath();
+    },
 
-
-quit(processFiles(files,options));
+    readFile: readFile
+});

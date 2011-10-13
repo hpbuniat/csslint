@@ -2,91 +2,84 @@
  * CSSLint Node.js Command Line Interface
  */
 
+/*jshint node:true*/
+/*global cli*/
+
 var fs      = require("fs"),
     path    = require("path"),
-    CSSLint = require("./lib/csslint-node").CSSLint,
-    options = {},
-    stdout  = process.stdout;
+    CSSLint = require("./lib/csslint-node").CSSLint;
+    
+cli({
+    args: process.argv.slice(2),
 
-//-----------------------------------------------------------------------------
-// Helper Functions
-//-----------------------------------------------------------------------------
-
-//get all files in a directory
-function getFiles(dir){
-    var files = [];
-
-    try {
-        fs.statSync(dir);
-    } catch (ex){
-        return [];
-    }
-
-    function traverse(dir, stack){
-        stack.push(dir);
-        fs.readdirSync(stack.join("/")).forEach(function(file){
-            var path = stack.concat([file]).join("/");
-            var stat = fs.statSync(path);
-            
-            if (file[0] == ".") {
-                return;
-            } else if (stat.isFile() && /\.css$/.test(file)){
-                files.push(path);
-            } else if (stat.isDirectory()){
-                traverse(file, stack);
-            }
-        });
-        stack.pop();
-    }
-
-    traverse(dir, []);
-
-    return files;
-}
-
-//-----------------------------------------------------------------------------
-// Process command line
-//-----------------------------------------------------------------------------
-
-var args     = process.argv.slice(2),
-    argName,
-    arg      = args.shift(),
-    files    = [];
-
-while(arg){
-    if (arg.indexOf("--") === 0){
-        argName = arg.substring(2);
-        options[argName] = true;
-        
-        if (argName.indexOf("rules=") > -1){
-            options.rules = argName.substring(argName.indexOf("=") + 1);
-        } else if (argName.indexOf("format=") > -1) {
-            options.format = argName.substring(argName.indexOf("=") + 1);
-        }
-    } else {
-        //see if it's a directory or a file
-        if (fs.statSync(arg).isDirectory()){
-            files = files.concat(getFiles(arg));
+    print: function(message){
+        fs.writeSync(1, message + "\n");
+    },
+    
+    quit: function(code){
+    
+        //Workaround for https://github.com/joyent/node/issues/1669
+        var flushed = process.stdout.flush();
+        if (!flushed) {
+            process.once("drain", function () {
+                process.exit(code || 0);
+            });
         } else {
-            files.push(arg);
+            process.exit(code || 0);
         }
+    },
+    
+    isDirectory: function(name){
+        return fs.statSync(name).isDirectory();
+    },
+
+    getFiles: function(dir){
+        var files = [];
+
+        try {
+            fs.statSync(dir);
+        } catch (ex){
+            return [];
+        }
+
+        function traverse(dir, stack){
+            stack.push(dir);
+            fs.readdirSync(stack.join("/")).forEach(function(file){
+                var path = stack.concat([file]).join("/"),
+                    stat = fs.statSync(path);
+                
+                if (file[0] == ".") {
+                    return;
+                } else if (stat.isFile() && /\.css$/.test(file)){
+                    files.push(path);
+                } else if (stat.isDirectory()){
+                    traverse(file, stack);
+                }
+            });
+            stack.pop();
+        }
+
+        traverse(dir, []);
+
+        return files;
+    },
+    
+    fixFilenames: function(files){
+        return files.map(function(filename){
+            return path.resolve(process.cwd(), filename);
+        });
+    },
+
+    getWorkingDirectory: function() {
+        return process.cwd();
+    },
+    
+    getFullPath: function(filename){
+        return path.resolve(process.cwd(), filename);
+    },
+
+    readFile: function(filename){
+        return fs.readFileSync(filename, "utf-8");    
     }
-    arg = args.shift();
-}
-
-if (options.help || arguments.length === 0){
-    outputHelp();
-    process.exit(0);
-}
-
-if (options.version){
-    print("v" + CSSLint.version);
-    process.exit(0);
-}
-
-//get the full path names
-files = files.map(function(filename){
-    return path.join(process.cwd(), filename);
 });
 
-process.exit(processFiles(files,options));

@@ -1,11 +1,12 @@
-<project name="csslint" default="all">
+<project name="csslint" default="build.all">
 
     <!-- version number -->
-    <property name="csslint.version" value="0.5.0" />
+    <property name="csslint.version" value="0.6.1" />
 
     <!-- the directories containing the source files -->
     <property name="src.dir" value="./src" />
     <property name="npm.dir" value="./npm" />
+    <property name="docs.dir" value="./docs" />
     <property name="tests.dir" value="./tests" />
     
     <!-- the directories and files to output to -->
@@ -40,23 +41,68 @@
               pattern="d-MMMM-yyyy hh:mm:ss"
               locale="en,US"/>
     </tstamp>
+    <tstamp>
+      <format property="SIMPLE_DATE"
+              pattern="MMMM d, yyyy"
+              locale="en,US"/>
+    </tstamp>    
     
     <!-- clean -->
     <target name="clean">
         <delete dir="${build.dir}" />
     </target>
     
+    <target name="changelog.update">
+        <exec executable="git" failonerror="true" outputproperty="git.tag">
+            <arg line="tag"/>
+        </exec>      
+        <script language="javascript"><![CDATA[
+            //get the most recent tag to get the diff
+            var tags = csslint.getProperty("git.tag").replace("\r", "").split("\n"),
+                lastTag = tags[tags.length-1];
+            csslint.setProperty("git.log.range", lastTag + "..HEAD");
+        ]]></script>
+        
+        <!-- git log -pretty=format:'* %s (%an)' v0.4.0..v0.5.0-->
+        <exec executable="git" failonerror="true" outputproperty="git.changelog">
+            <arg line="log --pretty=format:'* %s (%an)' ${git.log.range}"/>
+        </exec>      
+        
+        <concat destfile="CHANGELOG.tmp"  fixlastline="true">
+            <header trimleading="yes">${SIMPLE_DATE} - v${csslint.version}
+            
+            ${git.changelog}
+            
+            </header>
+            <fileset dir="." includes="CHANGELOG" />
+        </concat>
+        
+        <delete file="CHANGELOG"/>
+        <move file="CHANGELOG.tmp" tofile="CHANGELOG"/>
+        
+    </target>
+    
     <!-- validate JS files with JSHint -->
-    <target name="lint">
-       
+    <target name="lint">       
         <apply executable="java" parallel="false" failonerror="true">
             <fileset dir="${src.dir}" includes="**/*.js" />
             <arg line="-jar"/>
             <arg path="${lib.dir}/js.jar"/>
             <arg path="${lib.dir}/jshint.js" />
             <srcfile/>
-        </apply>      
-        
+            <arg line="curly=true,forin=true,latedef=true,noempty=true,undef=true,rhino=false"/>
+        </apply>              
+    </target>
+
+    <!-- run tests on the command line -->
+    <target name="test">       
+        <exec executable="java" failonerror="true">
+            <arg line="-jar"/>
+            <arg path="${lib.dir}/js.jar"/>
+            <arg path="${lib.dir}/yuitest-rhino-cli.js" />
+            <arg path="${build.dir}/${core.build.file}" />
+            <arg path="${build.dir}/${tests.build.file}" />
+        </exec>              
     </target>
 
     <!-- build the core library -->
@@ -78,8 +124,19 @@
             })();
             </footer>
             
-        </concat>        
-    </target>   
+        </concat>
+    </target>
+    
+    <!-- build the docs -->
+    <target name="build.docs">
+    
+        <delete dir="${build.dir}/docs"/>
+        <mkdir dir="${build.dir}/docs"/>
+        
+        <copy todir="${build.dir}/docs">
+            <fileset dir="${docs.dir}" includes="**/*" />
+        </copy>      
+    </target>    
     
     <!-- build the web worker library -->
     <target name="build.worker">    
@@ -125,7 +182,7 @@
            <header trimleading="yes">#!/usr/bin/env node
             /* Build time: ${RIGHT_NOW} */
             </header>
-           <filelist dir="${src.dir}/cli" files="util.js,node.js" />
+           <filelist dir="${src.dir}/cli" files="common.js,node.js" />
        </concat>
        <copy file="${build.dir}/${node.build.file}" todir="${build.npm.dir}/lib"/>
        
@@ -144,12 +201,12 @@
     <target name="build.rhino" depends="build.core">
         <concat destfile="${build.dir}/${rhino.build.file}" fixlastline="true">
             <filelist dir="${build.dir}" files="${core.build.file}" />
-            <filelist dir="${src.dir}/cli" files="util.js,rhino.js" />
+            <filelist dir="${src.dir}/cli" files="common.js,rhino.js" />
         </concat>
     </target>    
     
     <!-- Create a release with version number embedded -->
-    <target name="release" depends="all">
+    <target name="release" depends="lint,test,build.all,changelog.update">
         <delete dir="${release.dir}" />
         <mkdir dir="${release.dir}"/>
         <copy todir="${release.dir}">
@@ -161,17 +218,17 @@
     </target>
     
     <!-- Update CSS parser with the latest -->
-    <target name="update-parser">
-        <get src="${parser.url}" dest="${lib.dir}/" />
+    <target name="parser.update">
+        <get src="${parser.url}" dest="${lib.dir}/${parserlib.js}" />
     </target>
     
     <!-- Update JSHint with the latest -->
-    <target name="update-jshint">
+    <target name="jshint.update">
         <get src="${jshint-rhino.url}" dest="${lib.dir}/" />
         <get src="${jshint.url}" dest="${lib.dir}/" />
     </target>
     
     <!-- Build all files -->
-    <target name="all" depends="clean,build.core,build.worker,build.node,build.tests,build.rhino"/>
+    <target name="build.all" depends="clean,build.core,build.worker,build.node,build.tests,build.rhino,build.docs"/>
 
 </project>
