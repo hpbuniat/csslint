@@ -7,7 +7,7 @@ CSSLint.addRule({
 
     //rule information
     id: "box-model",
-    name: "Box Model",
+    name: "Beware of broken box model",
     desc: "Don't use width or height when using padding or border.",
     browsers: "All",
 
@@ -32,9 +32,41 @@ CSSLint.addRule({
             },
             properties;
 
-        parser.addListener("startrule", function(){
+        function startRule(){
             properties = {};
-        });
+        }
+
+        function endRule(){
+            var prop;
+            if (properties.height){
+                for (prop in heightProperties){
+                    if (heightProperties.hasOwnProperty(prop) && properties[prop]){
+                    
+                        //special case for padding
+                        if (!(prop == "padding" && properties[prop].value.parts.length === 2 && properties[prop].value.parts[0].value === 0)){
+                            reporter.report("Broken box model: using height with " + prop + ".", properties[prop].line, properties[prop].col, rule);
+                        }
+                    }
+                }
+            }
+
+            if (properties.width){
+                for (prop in widthProperties){
+                    if (widthProperties.hasOwnProperty(prop) && properties[prop]){
+
+                        if (!(prop == "padding" && properties[prop].value.parts.length === 2 && properties[prop].value.parts[1].value === 0)){
+                            reporter.report("Broken box model: using width with " + prop + ".", properties[prop].line, properties[prop].col, rule);
+                        }
+                    }
+                }
+            }        
+        }
+
+        parser.addListener("startrule", startRule);
+        parser.addListener("startfontface", startRule);
+        parser.addListener("startpage", startRule);
+        parser.addListener("startpagemargin", startRule);
+        parser.addListener("startkeyframerule", startRule); 
 
         parser.addListener("property", function(event){
             var name = event.property.text.toLowerCase();
@@ -51,32 +83,11 @@ CSSLint.addRule({
             
         });
 
-        parser.addListener("endrule", function(){
-            var prop;
-            if (properties.height){
-                for (prop in heightProperties){
-                    if (heightProperties.hasOwnProperty(prop) && properties[prop]){
-                    
-                        //special case for padding
-                        if (!(prop == "padding" && properties[prop].value.parts.length === 2 && properties[prop].value.parts[0].value === 0)){
-                            reporter.warn("Broken box model: using height with " + prop + ".", properties[prop].line, properties[prop].col, rule);
-                        }
-                    }
-                }
-            }
-
-            if (properties.width){
-                for (prop in widthProperties){
-                    if (widthProperties.hasOwnProperty(prop) && properties[prop]){
-
-                        if (!(prop == "padding" && properties[prop].value.parts.length === 2 && properties[prop].value.parts[1].value === 0)){
-                            reporter.warn("Broken box model: using width with " + prop + ".", properties[prop].line, properties[prop].col, rule);
-                        }
-                    }
-                }
-            }
-
-        });
+        parser.addListener("endrule", endRule);
+        parser.addListener("endfontface", endRule);
+        parser.addListener("endpage", endRule);
+        parser.addListener("endpagemargin", endRule);
+        parser.addListener("endkeyframerule", endRule);         
     }
 
 });

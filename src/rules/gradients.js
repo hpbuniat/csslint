@@ -6,7 +6,7 @@ CSSLint.addRule({
 
     //rule information
     id: "gradients",
-    name: "Gradients",
+    name: "Require all gradient definitions",
     desc: "When using a vendor-prefixed gradient, make sure to use them all.",
     browsers: "All",
 
@@ -52,7 +52,7 @@ CSSLint.addRule({
             }
 
             if (missing.length && missing.length < 4){            
-                reporter.warn("Missing vendor-prefixed CSS gradients for " + missing.join(", ") + ".", event.selectors[0].line, event.selectors[0].col, rule); 
+                reporter.report("Missing vendor-prefixed CSS gradients for " + missing.join(", ") + ".", event.selectors[0].line, event.selectors[0].col, rule); 
             }
 
         });

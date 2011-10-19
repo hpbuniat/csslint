@@ -6,7 +6,7 @@ CSSLint.addRule({
 
     //rule information
     id: "ids",
-    name: "IDs",
+    name: "Disallow IDs in selectors",
     desc: "Selectors should not contain IDs.",
     browsers: "All",
 
@@ -38,9 +38,9 @@ CSSLint.addRule({
                 }
 
                 if (idCount == 1){
-                    reporter.warn("Don't use IDs in selectors.", selector.line, selector.col, rule);
+                    reporter.report("Don't use IDs in selectors.", selector.line, selector.col, rule);
                 } else if (idCount > 1){
-                    reporter.warn(idCount + " IDs in the selector, really?", selector.line, selector.col, rule);
+                    reporter.report(idCount + " IDs in the selector, really?", selector.line, selector.col, rule);
                 }
             }
 
