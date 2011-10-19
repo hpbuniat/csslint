@@ -1,12 +1,11 @@
 <project name="csslint" default="build.all">
 
     <!-- version number -->
-    <property name="csslint.version" value="0.6.1" />
+    <property name="csslint.version" value="0.7.0" />
 
     <!-- the directories containing the source files -->
     <property name="src.dir" value="./src" />
     <property name="npm.dir" value="./npm" />
-    <property name="docs.dir" value="./docs" />
     <property name="tests.dir" value="./tests" />
     
     <!-- the directories and files to output to -->
@@ -95,13 +94,24 @@
     </target>
 
     <!-- run tests on the command line -->
-    <target name="test">       
+    <target name="test" depends="build.all,test.general.rules">       
         <exec executable="java" failonerror="true">
             <arg line="-jar"/>
             <arg path="${lib.dir}/js.jar"/>
             <arg path="${lib.dir}/yuitest-rhino-cli.js" />
             <arg path="${build.dir}/${core.build.file}" />
             <arg path="${build.dir}/${tests.build.file}" />
+        </exec>              
+    </target>
+
+    <!-- must be done separately from other tests due to Rhino limitations -->
+    <target name="test.general.rules">       
+        <exec executable="java" failonerror="true">
+            <arg line="-jar"/>
+            <arg path="${lib.dir}/js.jar"/>
+            <arg path="${lib.dir}/yuitest-rhino-cli.js" />
+            <arg path="${build.dir}/${core.build.file}" />
+            <arg path="${tests.dir}/all-rules.js" />
         </exec>              
     </target>
 
@@ -126,17 +136,6 @@
             
         </concat>
     </target>
-    
-    <!-- build the docs -->
-    <target name="build.docs">
-    
-        <delete dir="${build.dir}/docs"/>
-        <mkdir dir="${build.dir}/docs"/>
-        
-        <copy todir="${build.dir}/docs">
-            <fileset dir="${docs.dir}" includes="**/*" />
-        </copy>      
-    </target>    
     
     <!-- build the web worker library -->
     <target name="build.worker">    
@@ -193,7 +192,7 @@
     <!-- build the tests into a single file -->
     <target name="build.tests">    
         <concat destfile="${build.dir}/${tests.build.file}"  fixlastline="true">
-            <fileset dir="${tests.dir}/" includes="**/*.js" />           
+            <fileset dir="${tests.dir}/" includes="**/*.js" excludes="all-rules.js" />           
         </concat>        
     </target>   
 
@@ -229,6 +228,6 @@
     </target>
     
     <!-- Build all files -->
-    <target name="build.all" depends="clean,build.core,build.worker,build.node,build.tests,build.rhino,build.docs"/>
+    <target name="build.all" depends="clean,build.core,build.worker,build.node,build.tests,build.rhino"/>
 
 </project>
