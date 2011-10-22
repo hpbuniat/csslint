@@ -6,7 +6,7 @@ CSSLint.addRule({
 
     //rule information
     id: "adjoining-classes",
-    name: "Adjoining Classes",
+    name: "Disallow adjoining classes",
     desc: "Don't use adjoining classes.",
     browsers: "IE6",
 
@@ -33,7 +33,7 @@ CSSLint.addRule({
                                 classCount++;
                             }
                             if (classCount > 1){
-                                reporter.warn("Don't use adjoining classes.", part.line, part.col, rule);
+                                reporter.report("Don't use adjoining classes.", part.line, part.col, rule);
                             }
                         }
                     }

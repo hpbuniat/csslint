@@ -41,7 +41,7 @@
             Assert.areEqual(1, result.messages.length);
             Assert.areEqual("warning", result.messages[0].type);
             Assert.areEqual("Duplicate property 'float' found.", result.messages[0].message);
-        }
+        }   
         
 
     }));

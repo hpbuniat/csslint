@@ -7,7 +7,7 @@ CSSLint.addRule({
 
     //rule information
     id: "compatible-vendor-prefixes",
-    name: "Compatible Vendor Prefixes",
+    name: "Require compatible vendor prefixes",
     desc: "Include all compatible vendor prefixes to reach a wider range of users.",
     browsers: "All",
 
@@ -156,7 +156,7 @@ CSSLint.addRule({
                             item = full[i];
                             if (actual.indexOf(item) === -1) {
                                 propertiesSpecified = (actual.length === 1) ? actual[0] : (actual.length == 2) ? actual.join(" and ") : actual.join(", ");
-                                reporter.warn("The property " + item + " is compatible with " + propertiesSpecified + " and should be included as well.", event.selectors[0].line, event.selectors[0].col, rule); 
+                                reporter.report("The property " + item + " is compatible with " + propertiesSpecified + " and should be included as well.", event.selectors[0].line, event.selectors[0].col, rule); 
                             }
                         }
 

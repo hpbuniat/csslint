@@ -6,7 +6,7 @@ CSSLint.addRule({
 
     //rule information
     id: "unique-headings",
-    name: "Unique Headings",
+    name: "Headings should only be defined once",
     desc: "Headings should be defined only once.",
     browsers: "All",
 
@@ -46,7 +46,7 @@ CSSLint.addRule({
                     if (!pseudo){
                         headings[RegExp.$1]++;
                         if (headings[RegExp.$1] > 1) {
-                            reporter.warn("Heading (" + part.elementName + ") has already been defined.", part.line, part.col, rule);
+                            reporter.report("Heading (" + part.elementName + ") has already been defined.", part.line, part.col, rule);
                         }
                     }
                 }

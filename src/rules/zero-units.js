@@ -6,7 +6,7 @@ CSSLint.addRule({
 
     //rule information
     id: "zero-units",
-    name: "Zero Units",
+    name: "Disallow units for 0 values",
     desc: "You don't need to specify units when a value is 0.",
     browsers: "All",
 
@@ -22,7 +22,7 @@ CSSLint.addRule({
 
             while(i < len){
                 if ((parts[i].units || parts[i].type == "percentage") && parts[i].value === 0){
-                    reporter.warn("Values of 0 shouldn't have units specified.", parts[i].line, parts[i].col, rule);
+                    reporter.report("Values of 0 shouldn't have units specified.", parts[i].line, parts[i].col, rule);
                 }
                 i++;
             }
