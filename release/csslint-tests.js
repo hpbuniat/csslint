@@ -557,6 +557,8 @@
             Assert.areEqual(1, result.messages.length);
             Assert.areEqual("warning", result.messages[0].type);
             Assert.areEqual("The property -moz-border-radius is compatible with -webkit-border-radius and should be included as well.", result.messages[0].message);
+            Assert.areEqual(6, result.messages[0].col);
+            Assert.areEqual(1, result.messages[0].line);
         },
         
         "Using -webkit-transition and -moz-transition should warn to also include -o-transition and -ms-transition.": function(){
@@ -564,8 +566,13 @@
             Assert.areEqual(2, result.messages.length);
             Assert.areEqual("warning", result.messages[0].type);
             Assert.areEqual("The property -o-transition is compatible with -webkit-transition and -moz-transition and should be included as well.", result.messages[0].message);
+            Assert.areEqual(6, result.messages[0].col);
+            Assert.areEqual(1, result.messages[0].line);
             Assert.areEqual("warning", result.messages[1].type);
             Assert.areEqual("The property -ms-transition is compatible with -webkit-transition and -moz-transition and should be included as well.", result.messages[1].message);
+            Assert.areEqual(6, result.messages[1].col);
+            Assert.areEqual(1, result.messages[1].line);
+            
         },
         
         "Using -webkit-transform should warn to also include -moz-transform, -ms-transform, and -o-transform.": function(){
@@ -1691,14 +1698,48 @@ background: -ms-linear-gradient(top, #1e5799 ,#2989d8 ,#207cca ,#7db9e8 );
     var Assert = YUITest.Assert;
 
     YUITest.TestRunner.add(new YUITest.TestCase({
+    
+        name: "Unqualified Attributes Errors",
+
+        "Using an unqualified attribute selector alone should result in a warning": function(){
+            var result = CSSLint.verify("[type=text] { font-size: 10px; }", {"unqualified-attributes": 1 });
+            Assert.areEqual(1, result.messages.length);
+            Assert.areEqual("warning", result.messages[0].type);
+            Assert.areEqual("Unqualified attribute selectors are known to be slow.", result.messages[0].message);
+        },
+
+        "Using an unqualified attribute selector as the right-most part should result in a warning": function(){
+            var result = CSSLint.verify("p div [type=text] { font-size: 10px; }", {"unqualified-attributes": 1 });
+            Assert.areEqual(1, result.messages.length);
+            Assert.areEqual("warning", result.messages[0].type);
+            Assert.areEqual("Unqualified attribute selectors are known to be slow.", result.messages[0].message);
+        },
+
+        "Using an unqualified attribute selector in the middle should not result in a warning": function(){
+            var result = CSSLint.verify("[type=text] .foo { font-size: 10px; } ", {"unqualified-attributes": 1 });
+            Assert.areEqual(0, result.messages.length);
+        }
+        
+    }));
+
+})();
+
+(function(){
+
+    /*global YUITest, CSSLint*/
+    var Assert = YUITest.Assert;
+
+    YUITest.TestRunner.add(new YUITest.TestCase({
 
         name: "Vendor Prefix Errors",
 
         "Using -moz-border-radius without border-radius should result in one warning": function(){
-            var result = CSSLint.verify("h1 { -moz-border-radius: 5px; }", { "vendor-prefix": 1 });
+            var result = CSSLint.verify("h1 {\n    -moz-border-radius: 5px; \n}", { "vendor-prefix": 1 });
             Assert.areEqual(1, result.messages.length);
             Assert.areEqual("warning", result.messages[0].type);
             Assert.areEqual("Missing standard property 'border-radius' to go along with '-moz-border-radius'.", result.messages[0].message);
+            Assert.areEqual(2, result.messages[0].line);
+            Assert.areEqual(5, result.messages[0].col);
         },
 
         "Using -webkit-border-radius without border-radius should result in one warning": function(){
@@ -1716,10 +1757,13 @@ background: -ms-linear-gradient(top, #1e5799 ,#2989d8 ,#207cca ,#7db9e8 );
         },
 
         "Using -moz-border-radius after  border-radius should result in one warning": function(){
-            var result = CSSLint.verify("h1 { border-radius: 5px; -moz-border-radius: 5px; }", { "vendor-prefix": 1 });
+            var result = CSSLint.verify("h1 { \nborder-radius: 5px; \n    -moz-border-radius: 5px; }", { "vendor-prefix": 1 });
             Assert.areEqual(1, result.messages.length);
             Assert.areEqual("warning", result.messages[0].type);
             Assert.areEqual("Standard property 'border-radius' should come after vendor-prefixed property '-moz-border-radius'.", result.messages[0].message);
+            Assert.areEqual(3, result.messages[0].line);
+            Assert.areEqual(5, result.messages[0].col);
+            
         },
 
         "Using -webkit-border-bottom-left-radius with border-bottom-left-radius should not result in a warning.": function(){
@@ -1790,7 +1834,14 @@ background: -ms-linear-gradient(top, #1e5799 ,#2989d8 ,#207cca ,#7db9e8 );
         "Using 0 should not result in a warning": function(){
             var result = CSSLint.verify("h1 { left: 0; }", { "zero-units": 1 });
             Assert.areEqual(0, result.messages.length);
+        },
+        
+        "Using 0s for animation-duration should not result in a warning": function(){
+            var result = CSSLint.verify("h1 { animation-duration: 0s; }", { "zero-units": 1 });
+            Assert.areEqual(0, result.messages.length);
         }
+        
+        
     }));
 
 })();
