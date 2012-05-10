@@ -19,7 +19,8 @@ cli({
     quit: function(code){
     
         //Workaround for https://github.com/joyent/node/issues/1669
-        if (!process.stdout.flush || !process.stdout.flush()) {
+        
+        if ((!process.stdout.flush || !process.stdout.flush()) && (parseFloat(process.versions.node) < 0.5)) {
             process.once("drain", function () {
                 process.exit(code || 0);
             });
@@ -29,7 +30,11 @@ cli({
     },
     
     isDirectory: function(name){
-        return fs.statSync(name).isDirectory();
+        try {
+            return fs.statSync(name).isDirectory();
+        } catch (ex) {
+            return false;
+        }
     },
 
     getFiles: function(dir){
@@ -72,7 +77,11 @@ cli({
     },
 
     readFile: function(filename){
-        return fs.readFileSync(filename, "utf-8");    
+        try {
+            return fs.readFileSync(filename, "utf-8");    
+        } catch (ex) {
+            return "";
+        }
     }
 });
 
