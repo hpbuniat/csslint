@@ -1,2 +1,5 @@
 csslint.pnproj
 build/
+.settings/
+.idea/
+.project
