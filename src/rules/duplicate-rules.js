@@ -25,7 +25,7 @@ CSSLint.addRule({
             for (i=0, len = event.selectors.length; i < len; i++){
                 selector = event.selectors[i];
                 if (selector.specificity.toString() !== '0,0,0,1') {
-                    selectors.push(selector.text);
+                    selectors.push(selector.text.replace(/\s+/, ' '));
                 }
             }
         });
@@ -39,7 +39,10 @@ CSSLint.addRule({
                     selectorStack[sorted] = [];
                 }
 
-                selectorStack[sorted].push(selectors.join(', '));
+                selectorStack[sorted].push({
+                    "selector": selectors.join(', '),
+                    "event": event
+                });
             }
 
             current = [];
@@ -60,11 +63,11 @@ CSSLint.addRule({
                     result[sorted] = selectorStack[sorted];
                 }
             }
-            
-            reporter.stat(rule.id, result.length);
+
             for (sorted in result) {
-                var selectorString = result[sorted].join("\n\t");
-                reporter.rollupWarn("Rule (" + sorted + ") was declared " + result[sorted].length + " times. \n\t" + selectorString, rule);
+                for (i=0, len = result[sorted].length; i < len; i++) {
+                    reporter.report("Rule (" + sorted + ") was declared " + result[sorted].length + " times. (selector: " + result[sorted][i].selector + ")", result[sorted][i].event.line, result[sorted][i].event.col, rule);
+                }
             }
         });
     }

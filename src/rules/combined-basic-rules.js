@@ -58,7 +58,8 @@ CSSLint.addRule({
 
             rules.push({
                 "selectors": selectors,
-                "rule": current
+                "rule": current,
+                "event": event
             });
 
             current = [];
@@ -82,14 +83,13 @@ CSSLint.addRule({
                 }
             }
 
-            reporter.stat(rule.id, result.length);
             for (i=0, len = result.length; i < len; i++) {
                 var selectorString = result[i].selectors.join(", "),
                     text = "Rule (" + result[i].rule.join("; ") + ") does only consist of simple rules, which are already declared.";
 
                 text += "\n\tSelector: " + selectorString;
                 text += "\n\tSimple: " + result[i].simple.join(", ");
-                reporter.rollupWarn(text, rule);
+                reporter.report(text, result[i].event.line, result[i].event.col, rule);
             }
         });
     }
