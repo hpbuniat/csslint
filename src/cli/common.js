@@ -8,7 +8,7 @@ function cli(api){
     //-------------------------------------------------------------------------
     // Helper functions
     //-------------------------------------------------------------------------
-    
+
     /**
      * Returns an array of messages for a particular type.
      * @param messages {Array} Array of CSS Lint messages.
@@ -18,7 +18,7 @@ function cli(api){
     function pluckByType(messages, type){
         return messages.filter(function(message) {
             return message.type === type;
-        });        
+        });
     }
 
     /**
@@ -26,26 +26,78 @@ function cli(api){
      * @param options {Object} The CLI options.
      * @return {Object} A ruleset object.
      */
-    function gatherRules(options){
-        var ruleset,
-            warnings = options.rules || options.warnings,
+    function gatherRules(options, ruleset){
+        var warnings = options.rules || options.warnings,
             errors = options.errors;
-        
+
         if (warnings){
             ruleset = ruleset || {};
             warnings.split(",").forEach(function(value){
                 ruleset[value] = 1;
             });
         }
-        
+
         if (errors){
             ruleset = ruleset || {};
             errors.split(",").forEach(function(value){
                 ruleset[value] = 2;
             });
         }
-        
+
         return ruleset;
+    }
+
+    /**
+     * Filters out rules using the ignore command line option.
+     * @param options {Object} the CLI options
+     * @return {Object} A ruleset object.
+     */
+    function filterRules(options) {
+        var ignore = options.ignore,
+            ruleset = null;
+
+        if (ignore) {
+            ruleset = CSSLint.getRuleset();
+            ignore.split(",").forEach(function(value){
+                delete ruleset[value];
+            });
+        }
+
+        return ruleset;
+    }
+
+
+    /**
+     * Filters out files using the exclude-list command line option.
+     * @param files   {Array}  the list of files to check for exclusions
+     * @param options {Object} the CLI options
+     * @return {Array} A list of files
+     */
+    function filterFiles(files, options) {
+        var excludeList = options["exclude-list"],
+            excludeFiles = [],
+            filesToLint = files;
+
+
+        if (excludeList) {
+            // Build up the exclude list, expanding any directory exclusions that were passed in
+            excludeList.split(",").forEach(function(value){
+                if (api.isDirectory(value)) {
+                    excludeFiles = excludeFiles.concat(api.getFiles(value));
+                } else {
+                    excludeFiles.push(value);
+                }
+            });
+
+            // Remove the excluded files from the list of files to lint
+            excludeFiles.forEach(function(value){
+                if (filesToLint.indexOf(value) > -1) {
+                    filesToLint.splice(filesToLint.indexOf(value),1);
+                }
+            });
+        }
+
+        return filesToLint;
     }
 
     /**
@@ -68,7 +120,8 @@ function cli(api){
      */
     function processFile(relativeFilePath, options) {
         var input = api.readFile(relativeFilePath),
-            result = CSSLint.verify(input, gatherRules(options)),
+            ruleset = filterRules(options),
+            result = CSSLint.verify(input, gatherRules(options, ruleset)),
             formatter = CSSLint.getFormatter(options.format || "text"),
             messages = result.messages || [],
             output,
@@ -88,12 +141,12 @@ function cli(api){
             if (output){
                 api.print(output);
             }
-            
+
             if (messages.length > 0 && pluckByType(messages, "error").length > 0) {
                 exitCode = 1;
             }
         }
-        
+
         return exitCode;
     }
 
@@ -107,13 +160,15 @@ function cli(api){
             "\nUsage: csslint-rhino.js [options]* [file|dir]*",
             " ",
             "Global Options",
-            "  --help                    Displays this information.",
-            "  --format=<format>         Indicate which format to use for output.",
-            "  --list-rules              Outputs all of the rules available.",
-            "  --quiet                   Only output when errors are present.",
-            "  --errors=<rule[,rule]+>   Indicate which rules to include as errors.",
-            "  --warnings=<rule[,rule]+> Indicate which rules to include as warnings.",
-            "  --version                 Outputs the current version number."
+            "  --help                                Displays this information.",
+            "  --format=<format>                     Indicate which format to use for output.",
+            "  --list-rules                          Outputs all of the rules available.",
+            "  --quiet                               Only output when errors are present.",
+            "  --errors=<rule[,rule]+>               Indicate which rules to include as errors.",
+            "  --warnings=<rule[,rule]+>             Indicate which rules to include as warnings.",
+            "  --ignore=<rule[,rule]+>               Indicate which rules to ignore completely.",
+            "  --exclude-list=<file|dir[,file|dir]+> Indicate which files/directories to exclude from being linted.",
+            "  --version                             Outputs the current version number."
         ].join("\n") + "\n");
     }
 
@@ -123,26 +178,28 @@ function cli(api){
      * @param options {Object} options object
      * @return {Number} exit code
      */
-    function processFiles(files, options){
+    function processFiles(fileArray, options){
         var exitCode = 0,
             formatId = options.format || "text",
             formatter,
+            files = filterFiles(fileArray,options),
             output;
-            
+
         if (!files.length) {
             api.print("csslint: No files specified.");
             exitCode = 1;
         } else {
             if (!CSSLint.hasFormat(formatId)){
                 api.print("csslint: Unknown format '" + formatId + "'. Cannot proceed.");
-                exitCode = 1; 
+                exitCode = 1;
             } else {
                 formatter = CSSLint.getFormatter(formatId);
-                
+
                 output = formatter.startFormat();
                 if (output){
                     api.print(output);
                 }
+
 
                 files.forEach(function(file){
                     if (exitCode === 0) {
@@ -151,7 +208,7 @@ function cli(api){
                         processFile(file,options);
                     }
                 });
-                
+
                 output = formatter.endFormat();
                 if (output){
                     api.print(output);
@@ -159,44 +216,69 @@ function cli(api){
             }
         }
         return exitCode;
-    }    
+    }
+
+
+    function processArguments(args, options) {
+        var arg = args.shift(),
+            argName,
+            parts,
+            files = [];
+
+        while(arg){
+            if (arg.indexOf("--") === 0){
+                argName = arg.substring(2);
+                options[argName] = true;
+
+                if (argName.indexOf("=") > -1){
+                    parts = argName.split("=");
+                    options[parts[0]] = parts[1];
+                } else {
+                    options[argName] = true;
+                }
+
+            } else {
+
+                //see if it's a directory or a file
+                if (api.isDirectory(arg)){
+                    files = files.concat(api.getFiles(arg));
+                } else {
+                    files.push(arg);
+                }
+            }
+            arg = args.shift();
+        }
+
+        options.files = files;
+        return options;
+    }
+
+    function readConfigFile(options) {
+        var data = api.readFile(api.getFullPath(".csslintrc"));
+        if (data) {
+            options = processArguments(data.split(/[\s\n\r]+/m), options);
+        }
+
+        return options;
+    }
+
+
 
     //-----------------------------------------------------------------------------
     // Process command line
     //-----------------------------------------------------------------------------
 
     var args     = api.args,
-        argName,
-        parts,
-        arg      = args.shift(),
-        options  = {},
-        files    = [];
+        argCount = args.length,
+        options  = {};
 
-    while(arg){
-        if (arg.indexOf("--") === 0){
-            argName = arg.substring(2);
-            options[argName] = true;
-            
-            if (argName.indexOf("=") > -1){
-                parts = argName.split("=");
-                options[parts[0]] = parts[1];
-            } else {
-                options[argName] = true;
-            }
+    // first look for config file .csslintrc
+    options = readConfigFile(options);
 
-        } else {
-            
-            //see if it's a directory or a file
-            if (api.isDirectory(arg)){
-                files = files.concat(api.getFiles(arg));
-            } else {
-                files.push(arg);
-            }
-        }
-        arg = args.shift();
-    }
+    // Command line arguments override config file
+    options = processArguments(args, options);
 
-    if (options.help || arguments.length === 0){
+    if (options.help || argCount === 0){
         outputHelp();
         api.quit(0);
     }
@@ -211,5 +293,5 @@ function cli(api){
         api.quit(0);
     }
 
-    api.quit(processFiles(files,options));
+    api.quit(processFiles(options.files,options));
 }

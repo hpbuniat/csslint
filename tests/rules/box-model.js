@@ -18,7 +18,22 @@
             var result = CSSLint.verify(".foo { width: 100px; padding: 0; }", { "box-model": 1 });
             Assert.areEqual(0, result.messages.length);
         },
+        
+       "Using width:auto with padding should not result in a warning": function(){
+            var result = CSSLint.verify(".foo { width: auto; padding: 10px; }", { "box-model": 1 });
+            Assert.areEqual(0, result.messages.length);
+        },
 
+       "Using width:available with padding should not result in a warning": function(){
+            var result = CSSLint.verify(".foo { width: available; padding: 10px; }", { "box-model": 1 });
+            Assert.areEqual(0, result.messages.length);
+        },
+
+       "Using height:auto with padding should not result in a warning": function(){
+            var result = CSSLint.verify(".foo { height: auto; padding: 10px; }", { "box-model": 1 });
+            Assert.areEqual(0, result.messages.length);
+        },
+        
         "Using width and padding-left should result in a warning": function(){
             var result = CSSLint.verify(".foo { width: 100px; padding-left: 10px; }", { "box-model": 1 });
             Assert.areEqual(1, result.messages.length);
@@ -63,6 +78,11 @@
             Assert.areEqual(1, result.messages.length);
             Assert.areEqual("warning", result.messages[0].type);
             Assert.areEqual("Using width with border can sometimes make elements larger than you expect.", result.messages[0].message);
+        },
+        
+        "Using width and border with box-sizing should not result in a warning": function(){
+            var result = CSSLint.verify(".foo { box-sizing: border-box; width: 100px; border: 10px; }", { "box-model": 1 });
+            Assert.areEqual(0, result.messages.length);
         },
         
         "Using width and border-left should result in a warning": function(){
