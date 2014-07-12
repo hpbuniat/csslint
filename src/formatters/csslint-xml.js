@@ -1,4 +1,3 @@
-/*global CSSLint*/
 CSSLint.addFormatter({
     //format information
     id: "csslint-xml",
@@ -9,6 +8,7 @@ CSSLint.addFormatter({
      * @return {String} to prepend before all results
      */
     startFormat: function(){
+        "use strict";
         return "<?xml version=\"1.0\" encoding=\"utf-8\"?><csslint>";
     },
 
@@ -17,6 +17,7 @@ CSSLint.addFormatter({
      * @return {String} to append after all results
      */
     endFormat: function(){
+        "use strict";
         return "</csslint>";
     },
 
@@ -27,7 +28,8 @@ CSSLint.addFormatter({
      * @param options {Object} (UNUSED for now) specifies special handling of output
      * @return {String} output for results
      */
-    formatResults: function(results, filename, options) {
+    formatResults: function(results, filename/*, options*/) {
+        "use strict";
         var messages = results.messages,
             output = [];
 
@@ -39,7 +41,7 @@ CSSLint.addFormatter({
          *  - &amp; is the escape sequence for &
          *  - &lt; is the escape sequence for <
          *  - &gt; is the escape sequence for >
-         * 
+         *
          * @param {String} message to escape
          * @return escaped message as {String}
          */
@@ -52,7 +54,7 @@ CSSLint.addFormatter({
 
         if (messages.length > 0) {
             output.push("<file name=\""+filename+"\">");
-            CSSLint.Util.forEach(messages, function (message, i) {
+            CSSLint.Util.forEach(messages, function (message) {
                 if (message.rollup) {
                     output.push("<issue severity=\"" + message.type + "\" reason=\"" + escapeSpecialCharacters(message.message) + "\" evidence=\"" + escapeSpecialCharacters(message.evidence) + "\"/>");
                 } else {

@@ -1,10 +1,15 @@
 /*
  * Windows Script Host Command Line Interface
  */
-/*global ActiveXObject, WScript, Enumerator, cli*/
+
 //TODO: This file needs major cleanup!!!
 
+/* jshint wsh:true */
+/* global cli */
+
 var wshapi = (function(){
+    "use strict";
+
     var fso = new ActiveXObject("Scripting.FileSystemObject");
     var shell = WScript.CreateObject("WScript.Shell");
     var finalArgs = [], i, args = WScript.Arguments;
@@ -19,7 +24,7 @@ var wshapi = (function(){
 
     if (typeof Array.prototype.filter !== "function") {
         Array.prototype.filter = function(fn /*, thisp*/) {
-            if (typeof fn != "function") {
+            if (typeof fn !== "function") {
                 throw new Error("not a function");
             }
             var res = [], val, thisp = finalArgs[1];
@@ -38,7 +43,6 @@ var wshapi = (function(){
 
     if (!Array.prototype.indexOf) {
         Array.prototype.indexOf = function (searchElement /*, fromIndex */ ) {
-            "use strict";
             if (this === void 0 || this === null) {
                 throw new Error("unknown instance");
             }
@@ -66,6 +70,38 @@ var wshapi = (function(){
                 }
             }
             return -1;
+        };
+    }
+
+    //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
+    if (!Array.prototype.map)
+    {
+        Array.prototype.map = function(fun /*, thisArg */ ) {
+
+            if (this === void 0 || this === null) {
+                throw new TypeError();
+            }
+
+            var t = Object(this);
+            var len = t.length >>> 0;
+            if (typeof fun !== "function") {
+                throw new TypeError();
+            }
+
+            var res = new Array(len);
+            var thisArg = arguments.length >= 2 ? arguments[1] : void 0;
+            for (var i = 0; i < len; i++) {
+                // NOTE: Absolute correctness would demand Object.defineProperty
+                //       be used.  But this method is fairly new, and failure is
+                //       possible only if Object.prototype or Array.prototype
+                //       has a property |i| (very unlikely), so use a less-correct
+                //       but more portable alternative.
+                if (i in t) {
+                    res[i] = fun.call(thisArg, t[i], i, t);
+                }
+            }
+
+            return res;
         };
     }
 

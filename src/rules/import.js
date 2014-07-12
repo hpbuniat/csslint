@@ -1,7 +1,7 @@
 /*
  * Rule: Don't use @import, use <link> instead.
  */
-/*global CSSLint*/
+
 CSSLint.addRule({
 
     //rule information
@@ -12,9 +12,10 @@ CSSLint.addRule({
 
     //initialization
     init: function(parser, reporter){
+        "use strict";
         var rule = this;
-        
-        parser.addListener("import", function(event){        
+
+        parser.addListener("import", function(event){
             reporter.report("@import prevents parallel downloads, use <link> instead.", event.line, event.col, rule);
         });
 

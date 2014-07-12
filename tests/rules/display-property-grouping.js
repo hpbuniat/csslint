@@ -1,6 +1,5 @@
 (function(){
-
-    /*global YUITest, CSSLint*/
+    "use strict";
     var Assert = YUITest.Assert;
 
     YUITest.TestRunner.add(new YUITest.TestCase({
@@ -105,7 +104,7 @@
         "Padding-bottom with inline should result in a warning": function(){
             var result = CSSLint.verify(".foo { padding-bottom: 100px; display: inline; }", { "display-property-grouping": 1 });
             Assert.areEqual(0, result.messages.length);
-        }, 
+        },
 
         "Vertical-align with block should result in a warning": function(){
             var result = CSSLint.verify(".foo { vertical-align: bottom; display: block; }", { "display-property-grouping": 1 });

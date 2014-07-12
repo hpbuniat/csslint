@@ -1,6 +1,5 @@
 (function(){
-
-    /*global YUITest, CSSLint*/
+    "use strict";
     var Assert = YUITest.Assert;
 
     YUITest.TestRunner.add(new YUITest.TestCase({
@@ -31,12 +30,12 @@
 
         "Using a vendor-prefix property should not result in a warning": function(){
             var result = CSSLint.verify("h2 { -moz-border-radius: 5px; }", { "known-properties": 1 });
-            Assert.areEqual(0, result.messages.length);        
+            Assert.areEqual(0, result.messages.length);
         },
-        
+
         "Using src in @font-face should not result in a warning": function(){
             var result = CSSLint.verify("@font-face { src: url(foo.otf); }", { "known-properties": 1 });
-            Assert.areEqual(0, result.messages.length);    
+            Assert.areEqual(0, result.messages.length);
         }
 
     }));

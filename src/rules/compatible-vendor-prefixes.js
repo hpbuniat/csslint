@@ -2,7 +2,7 @@
  * Rule: Include all compatible vendor prefixes to reach a wider
  * range of users.
  */
-/*global CSSLint*/ 
+
 CSSLint.addRule({
 
     //rule information
@@ -13,6 +13,7 @@ CSSLint.addRule({
 
     //initialization
     init: function (parser, reporter) {
+        "use strict";
         var rule = this,
             compatiblePrefixes,
             properties,
@@ -90,15 +91,15 @@ CSSLint.addRule({
         for (prop in compatiblePrefixes) {
             if (compatiblePrefixes.hasOwnProperty(prop)) {
                 variations = [];
-                prefixed = compatiblePrefixes[prop].split(' ');
+                prefixed = compatiblePrefixes[prop].split(" ");
                 for (i = 0, len = prefixed.length; i < len; i++) {
-                    variations.push('-' + prefixed[i] + '-' + prop);
+                    variations.push("-" + prefixed[i] + "-" + prop);
                 }
                 compatiblePrefixes[prop] = variations;
                 arrayPush.apply(applyTo, variations);
             }
         }
-                
+
         parser.addListener("startrule", function () {
             properties = [];
         });
@@ -107,23 +108,23 @@ CSSLint.addRule({
             inKeyFrame = event.prefix || true;
         });
 
-        parser.addListener("endkeyframes", function (event) {
+        parser.addListener("endkeyframes", function () {
             inKeyFrame = false;
         });
 
         parser.addListener("property", function (event) {
             var name = event.property;
             if (CSSLint.Util.indexOf(applyTo, name.text) > -1) {
-            
+
                 // e.g., -moz-transform is okay to be alone in @-moz-keyframes
-                if (!inKeyFrame || typeof inKeyFrame != "string" || 
+                if (!inKeyFrame || typeof inKeyFrame !== "string" ||
                         name.text.indexOf("-" + inKeyFrame + "-") !== 0) {
                     properties.push(name);
                 }
             }
         });
 
-        parser.addListener("endrule", function (event) {
+        parser.addListener("endrule", function () {
             if (!properties.length) {
                 return;
             }
@@ -173,8 +174,8 @@ CSSLint.addRule({
                         for (i = 0, len = full.length; i < len; i++) {
                             item = full[i];
                             if (CSSLint.Util.indexOf(actual, item) === -1) {
-                                propertiesSpecified = (actual.length === 1) ? actual[0] : (actual.length == 2) ? actual.join(" and ") : actual.join(", ");
-                                reporter.report("The property " + item + " is compatible with " + propertiesSpecified + " and should be included as well.", value.actualNodes[0].line, value.actualNodes[0].col, rule); 
+                                propertiesSpecified = (actual.length === 1) ? actual[0] : (actual.length === 2) ? actual.join(" and ") : actual.join(", ");
+                                reporter.report("The property " + item + " is compatible with " + propertiesSpecified + " and should be included as well.", value.actualNodes[0].line, value.actualNodes[0].col, rule);
                             }
                         }
 

@@ -1,7 +1,7 @@
 /*
  * Rule: Total number of rules should not exceed x.
  */
-/*global CSSLint*/
+
 CSSLint.addRule({
 
     //rule information
@@ -12,8 +12,8 @@ CSSLint.addRule({
 
     //initialization
     init: function(parser, reporter){
-        var rule = this,
-            count = 0;
+        "use strict";
+        var count = 0;
 
         //count each rule
         parser.addListener("startrule", function(){

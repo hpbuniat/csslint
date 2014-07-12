@@ -1,5 +1,5 @@
-/*global CSSLint*/
 (function() {
+    "use strict";
 
     /**
      * Replace special characters before write to output.
@@ -17,7 +17,7 @@
         if (!str || str.constructor !== String) {
             return "";
         }
-        
+
         return str.replace(/[\"&><]/g, function(match) {
             switch (match) {
                 case "\"":
@@ -27,7 +27,7 @@
                 case "<":
                     return "&lt;";
                 case ">":
-                    return "&gt;";            
+                    return "&gt;";
             }
         });
     };
@@ -52,7 +52,7 @@
         endFormat: function(){
             return "</checkstyle>";
         },
-        
+
         /**
          * Returns message when there is a file read error.
          * @param {String} filename The name of the file that caused the error.
@@ -70,7 +70,7 @@
          * @param options {Object} (UNUSED for now) specifies special handling of output
          * @return {String} output for results
          */
-        formatResults: function(results, filename, options) {
+        formatResults: function(results, filename/*, options*/) {
             var messages = results.messages,
                 output = [];
 
@@ -82,20 +82,20 @@
              * @return rule source as {String}
              */
             var generateSource = function(rule) {
-                if (!rule || !('name' in rule)) {
+                if (!rule || !("name" in rule)) {
                     return "";
                 }
-                return 'net.csslint.' + rule.name.replace(/\s/g,'');
+                return "net.csslint." + rule.name.replace(/\s/g,"");
             };
 
 
 
             if (messages.length > 0) {
                 output.push("<file name=\""+filename+"\">");
-                CSSLint.Util.forEach(messages, function (message, i) {
+                CSSLint.Util.forEach(messages, function (message) {
                     //ignore rollups for now
                     if (!message.rollup) {
-                      output.push("<error line=\"" + message.line + "\" column=\"" + message.col + "\" severity=\"" + message.type + "\"" +
+                        output.push("<error line=\"" + message.line + "\" column=\"" + message.col + "\" severity=\"" + message.type + "\"" +
                           " message=\"" + xmlEscape(message.message) + "\" source=\"" + generateSource(message.rule) +"\"/>");
                     }
                 });

@@ -1,10 +1,9 @@
 (function(){
-
-    /*global YUITest, CSSLint*/
+    "use strict";
     var Assert = YUITest.Assert;
 
     YUITest.TestRunner.add(new YUITest.TestCase({
-    
+
         name: "font-size Rule Errors",
 
         "10 font-sizes should result in a warning": function(){

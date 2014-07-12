@@ -1,12 +1,11 @@
 (function(){
-
-    /*global YUITest, CSSLint*/
+    "use strict";
     var Assert = YUITest.Assert;
 
     YUITest.TestRunner.add(new YUITest.TestCase({
 
         name: "Adjoining Selector Rule Errors",
-        
+
         "Adjoining classes should result in a warning": function(){
             var result = CSSLint.verify(".foo.bar { }", { "adjoining-classes": 1 });
             Assert.areEqual(1, result.messages.length);

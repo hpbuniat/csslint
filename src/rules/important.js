@@ -3,7 +3,7 @@
  * war. Display a warning on !important declarations, an error if it's
  * used more at least 10 times.
  */
-/*global CSSLint*/
+
 CSSLint.addRule({
 
     //rule information
@@ -14,6 +14,7 @@ CSSLint.addRule({
 
     //initialization
     init: function(parser, reporter){
+        "use strict";
         var rule = this,
             count = 0;
 

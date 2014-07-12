@@ -1,4 +1,8 @@
-csslint.pnproj
 build/
+csslint.pnproj
 node_modules/
+npm-debug.log
 release/npm/README.md
+
+# Diff files
+*.orig

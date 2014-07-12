@@ -1,11 +1,11 @@
 /*
- * Rule: Certain properties don't play well with certain display values. 
+ * Rule: Certain properties don't play well with certain display values.
  * - float should not be used with inline-block
  * - height, width, margin-top, margin-bottom, float should not be used with inline
  * - vertical-align should not be used with block
  * - margin, float should not be used with table-*
  */
-/*global CSSLint*/
+
 CSSLint.addRule({
 
     //rule information
@@ -16,6 +16,7 @@ CSSLint.addRule({
 
     //initialization
     init: function(parser, reporter){
+        "use strict";
         var rule = this;
 
         var propertiesToCheck = {
@@ -39,12 +40,12 @@ CSSLint.addRule({
 
         function reportProperty(name, display, msg){
             if (properties[name]){
-                if (typeof propertiesToCheck[name] != "string" || properties[name].value.toLowerCase() != propertiesToCheck[name]){
+                if (typeof propertiesToCheck[name] !== "string" || properties[name].value.toLowerCase() !== propertiesToCheck[name]){
                     reporter.report(msg || name + " can't be used with display: " + display + ".", properties[name].line, properties[name].col, rule);
                 }
             }
         }
-        
+
         function startRule(){
             properties = {};
         }
@@ -61,7 +62,7 @@ CSSLint.addRule({
                         reportProperty("width", display);
                         reportProperty("margin", display);
                         reportProperty("margin-top", display);
-                        reportProperty("margin-bottom", display);              
+                        reportProperty("margin-bottom", display);
                         reportProperty("float", display, "display:inline has no effect on floated elements (but may be used to fix the IE6 double-margin bug).");
                         break;
 
@@ -89,7 +90,7 @@ CSSLint.addRule({
                         //otherwise do nothing
                 }
             }
-          
+
         }
 
         parser.addListener("startrule", startRule);
@@ -102,7 +103,7 @@ CSSLint.addRule({
             var name = event.property.text.toLowerCase();
 
             if (propertiesToCheck[name]){
-                properties[name] = { value: event.value.text, line: event.property.line, col: event.property.col };                    
+                properties[name] = { value: event.value.text, line: event.property.line, col: event.property.col };
             }
         });
 

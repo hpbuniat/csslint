@@ -1,4 +1,3 @@
-/*global CSSLint*/
 CSSLint.addFormatter({
     //format information
     id: "text",
@@ -9,6 +8,7 @@ CSSLint.addFormatter({
      * @return {String} to prepend before all results
      */
     startFormat: function() {
+        "use strict";
         return "";
     },
 
@@ -17,6 +17,7 @@ CSSLint.addFormatter({
      * @return {String} to append after all results
      */
     endFormat: function() {
+        "use strict";
         return "";
     },
 
@@ -28,6 +29,7 @@ CSSLint.addFormatter({
      * @return {String} output for results
      */
     formatResults: function(results, filename, options) {
+        "use strict";
         var messages = results.messages,
             output = "";
         options = options || {};
@@ -36,12 +38,19 @@ CSSLint.addFormatter({
             return options.quiet ? "" : "\n\ncsslint: No errors in " + filename + ".";
         }
 
-        output = "\n\ncsslint: There are " + messages.length  +  " problems in " + filename + ".";
+        output = "\n\ncsslint: There ";
+        if (messages.length === 1) {
+            output += "is 1 problem";
+        } else {
+            output += "are " + messages.length  +  " problems";
+        }
+        output += " in " + filename + ".";
+
         var pos = filename.lastIndexOf("/"),
             shortFilename = filename;
 
         if (pos === -1){
-            pos = filename.lastIndexOf("\\");       
+            pos = filename.lastIndexOf("\\");
         }
         if (pos > -1){
             shortFilename = filename.substring(pos+1);
@@ -58,7 +67,7 @@ CSSLint.addFormatter({
                 output += "\n" + message.evidence;
             }
         });
-    
+
         return output;
     }
 });

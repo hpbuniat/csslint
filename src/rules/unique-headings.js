@@ -1,7 +1,7 @@
 /*
  * Rule: Headings (h1-h6) should be defined only once.
  */
-/*global CSSLint*/
+
 CSSLint.addRule({
 
     //rule information
@@ -12,9 +12,10 @@ CSSLint.addRule({
 
     //initialization
     init: function(parser, reporter){
+        "use strict";
         var rule = this;
 
-        var headings =  {
+        var headings = {
                 h1: 0,
                 h2: 0,
                 h3: 0,
@@ -35,14 +36,14 @@ CSSLint.addRule({
                 part = selector.parts[selector.parts.length-1];
 
                 if (part.elementName && /(h[1-6])/i.test(part.elementName.toString())){
-                    
+
                     for (j=0; j < part.modifiers.length; j++){
-                        if (part.modifiers[j].type == "pseudo"){
+                        if (part.modifiers[j].type === "pseudo"){
                             pseudo = true;
                             break;
                         }
                     }
-                
+
                     if (!pseudo){
                         headings[RegExp.$1]++;
                         if (headings[RegExp.$1] > 1) {
@@ -52,11 +53,11 @@ CSSLint.addRule({
                 }
             }
         });
-        
-        parser.addListener("endstylesheet", function(event){
+
+        parser.addListener("endstylesheet", function(){
             var prop,
                 messages = [];
-                
+
             for (prop in headings){
                 if (headings.hasOwnProperty(prop)){
                     if (headings[prop] > 1){
@@ -64,11 +65,11 @@ CSSLint.addRule({
                     }
                 }
             }
-            
+
             if (messages.length){
                 reporter.rollupWarn("You have " + messages.join(", ") + " defined in this stylesheet.", rule);
             }
-        });        
+        });
     }
 
 });

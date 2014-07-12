@@ -1,10 +1,9 @@
 (function(){
-
-    /*global YUITest, CSSLint*/
+    "use strict";
     var Assert = YUITest.Assert;
 
     YUITest.TestRunner.add(new YUITest.TestCase({
-    
+
         name: "Shorthand Rule Errors",
 
         "All padding properties should result in a warning": function(){
@@ -30,7 +29,7 @@
             var result = CSSLint.verify(".foo{ margin-top: 8px;} ", {"shorthand": 1 });
             Assert.areEqual(0, result.messages.length);
         }
-				
+
     }));
 
 })();

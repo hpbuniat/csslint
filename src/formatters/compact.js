@@ -1,4 +1,3 @@
-/*global CSSLint*/
 CSSLint.addFormatter({
     //format information
     id: "compact",
@@ -9,6 +8,7 @@ CSSLint.addFormatter({
      * @return {String} to prepend before all results
      */
     startFormat: function() {
+        "use strict";
         return "";
     },
 
@@ -17,6 +17,7 @@ CSSLint.addFormatter({
      * @return {String} to append after all results
      */
     endFormat: function() {
+        "use strict";
         return "";
     },
 
@@ -28,6 +29,7 @@ CSSLint.addFormatter({
      * @return {String} output for results
      */
     formatResults: function(results, filename, options) {
+        "use strict";
         var messages = results.messages,
             output = "";
         options = options || {};
@@ -42,18 +44,18 @@ CSSLint.addFormatter({
         };
 
         if (messages.length === 0) {
-            return options.quiet ? "" : filename + ": Lint Free!";
+              return options.quiet ? "" : filename + ": Lint Free!";
         }
 
-        CSSLint.Util.forEach(messages, function(message, i) {
+        CSSLint.Util.forEach(messages, function(message) {
             if (message.rollup) {
                 output += filename + ": " + capitalize(message.type) + " - " + message.message + "\n";
             } else {
-                output += filename + ": " + "line " + message.line + 
+                output += filename + ": " + "line " + message.line +
                     ", col " + message.col + ", " + capitalize(message.type) + " - " + message.message + " (" + message.rule.id + ")\n";
             }
         });
-    
+
         return output;
     }
 });

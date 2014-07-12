@@ -1,16 +1,25 @@
-[![build status](https://secure.travis-ci.org/stubbornella/csslint.png)](http://travis-ci.org/stubbornella/csslint)
+[![NPM version](https://badge.fury.io/js/csslint.svg)](http://badge.fury.io/js/csslint)
+[![build status](https://secure.travis-ci.org/CSSLint/csslint.svg)](http://travis-ci.org/CSSLint/csslint)
+[![Dependency Status](https://david-dm.org/CSSLint/csslint.svg?theme=shields.io)](https://david-dm.org/CSSLint/csslint)
+[![devDependency Status](https://david-dm.org/CSSLint/csslint/dev-status.svg?theme=shields.io)](https://david-dm.org/CSSLint/csslint#info=devDependencies)
+
 # CSSLint
 
-CSSLint is a tool to help point out problems with your CSS code. It does basic syntax checking as well as applying a set of rules to the code that look for problematic patterns or signs of inefficiency. The rules are all pluggable, so you can easily write your own or omit ones you don't want. You can find information about both using CSS Lint and contributing to the project in the wiki: https://github.com/stubbornella/csslint/wiki 
+CSSLint is a tool to help point out problems with your CSS code.
+It does basic syntax checking as well as applying a set of rules
+to the code that look for problematic patterns or signs of inefficiency.
+The rules are all pluggable, so you can easily write your own or omit ones
+you don't want. You can find information about both using CSS Lint and
+contributing to the project in the wiki: https://github.com/CSSLint/csslint/wiki
 
-# Contributors
+## Contributors
 
-## Creators
+### Creators
 
 1. Nicole Sullivan, http://www.stubbornella.org
 1. Nicholas C. Zakas, http://www.nczonline.net
 
-## Contributors
+### Contributors
 
 1. Samori Gorse, https://twitter.com/shinuza (Rules, Non-zero Exit Code for CLI)
 1. Eitan Konigsburg, https://twitter.com/eitanmk (Rhino CLI)
@@ -34,3 +43,4 @@ CSSLint is a tool to help point out problems with your CSS code. It does basic s
 1. Shannon Moeller, http://shannonmoeller.com (Embedded rulesets)
 1. Nick Schonning, https://github.com/nschonni (Contributing.md, grunt build)
 1. Jared Wyles, https://github.com/jaredwy (Managing pull requests, endless advice)
+1. Scott Gonzalez, https://github.com/scottgonzalez (JSON config)

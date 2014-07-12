@@ -1,7 +1,7 @@
 /*
  * Rule: There should be no syntax errors. (Duh.)
  */
-/*global CSSLint*/
+
 CSSLint.addRule({
 
     //rule information
@@ -12,6 +12,7 @@ CSSLint.addRule({
 
     //initialization
     init: function(parser, reporter){
+        "use strict";
         var rule = this;
 
         parser.addListener("error", function(event){

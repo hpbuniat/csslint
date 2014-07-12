@@ -1,6 +1,5 @@
 (function(){
-
-    /*global YUITest, CSSLint*/
+    "use strict";
     var Assert = YUITest.Assert;
 
     YUITest.TestRunner.add(new YUITest.TestCase({
@@ -19,10 +18,10 @@
         },
 
         "File with problems should list them": function() {
-            var result = { messages: [ 
-                     { type: 'error', line: 2, col: 1, message: 'BOGUS ERROR', evidence: 'BOGUS', rule: { id: 'BOGUS_RULE_ID' } },
-                     { type: 'warning', line: 1, col: 1, message: 'BOGUS WARNING', evidence: 'BOGUS', rule: { id: 'BOGUS_RULE_ID' } }
-                ], stats: [] },
+            var result = { messages: [
+                { type: "error", line: 2, col: 1, message: "BOGUS ERROR", evidence: "BOGUS", rule: { id: "BOGUS_RULE_ID" } },
+                { type: "warning", line: 1, col: 1, message: "BOGUS WARNING", evidence: "BOGUS", rule: { id: "BOGUS_RULE_ID" } }
+            ], stats: [] },
                 err = "path/to/FILE: line 2, col 1, Error - BOGUS ERROR (BOGUS_RULE_ID)\n",
                 warning = "path/to/FILE: line 1, col 1, Warning - BOGUS WARNING (BOGUS_RULE_ID)\n",
                 expected = err + warning,
@@ -31,10 +30,10 @@
         },
 
         "Should output relative file paths": function() {
-            var result = { messages: [ 
-                    { type: 'error', line: 2, col: 1, message: 'BOGUS ERROR', evidence: 'BOGUS', rule: { id: 'BOGUS_RULE_ID' } },
-                    { type: 'warning', line: 1, col: 1, message: 'BOGUS WARNING', evidence: 'BOGUS', rule: { id: 'BOGUS_RULE_ID' } }
-                ], stats: [] },
+            var result = { messages: [
+                { type: "error", line: 2, col: 1, message: "BOGUS ERROR", evidence: "BOGUS", rule: { id: "BOGUS_RULE_ID" } },
+                { type: "warning", line: 1, col: 1, message: "BOGUS WARNING", evidence: "BOGUS", rule: { id: "BOGUS_RULE_ID" } }
+            ], stats: [] },
                 err = "path/to/FILE: line 2, col 1, Error - BOGUS ERROR (BOGUS_RULE_ID)\n",
                 warning = "path/to/FILE: line 1, col 1, Warning - BOGUS WARNING (BOGUS_RULE_ID)\n",
                 expected = err + warning,

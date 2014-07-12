@@ -1,4 +1,3 @@
-/*global CSSLint*/
 CSSLint.addFormatter({
     //format information
     id: "junit-xml",
@@ -9,6 +8,7 @@ CSSLint.addFormatter({
      * @return {String} to prepend before all results
      */
     startFormat: function(){
+        "use strict";
         return "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites>";
     },
 
@@ -17,6 +17,7 @@ CSSLint.addFormatter({
      * @return {String} to append after all results
      */
     endFormat: function() {
+        "use strict";
         return "</testsuites>";
     },
 
@@ -27,13 +28,14 @@ CSSLint.addFormatter({
      * @param options {Object} (UNUSED for now) specifies special handling of output
      * @return {String} output for results
      */
-    formatResults: function(results, filename, options) {
+    formatResults: function(results, filename/*, options*/) {
+        "use strict";
 
         var messages = results.messages,
             output = [],
             tests = {
-                'error': 0,
-                'failure': 0
+                "error": 0,
+                "failure": 0
             };
 
         /**
@@ -44,10 +46,10 @@ CSSLint.addFormatter({
          * @return rule source as {String}
          */
         var generateSource = function(rule) {
-            if (!rule || !('name' in rule)) {
+            if (!rule || !("name" in rule)) {
                 return "";
             }
-            return 'net.csslint.' + rule.name.replace(/\s/g,'');
+            return "net.csslint." + rule.name.replace(/\s/g,"");
         };
 
         /**
@@ -73,11 +75,11 @@ CSSLint.addFormatter({
 
         if (messages.length > 0) {
 
-            messages.forEach(function (message, i) {
+            messages.forEach(function (message) {
 
                 // since junit has no warning class
                 // all issues as errors
-                var type = message.type === 'warning' ? 'error' : message.type;
+                var type = message.type === "warning" ? "error" : message.type;
 
                 //ignore rollups for now
                 if (!message.rollup) {
@@ -85,7 +87,7 @@ CSSLint.addFormatter({
                     // build the test case seperately, once joined
                     // we'll add it to a custom array filtered by type
                     output.push("<testcase time=\"0\" name=\"" + generateSource(message.rule) + "\">");
-                    output.push("<" + type + " message=\"" + escapeSpecialCharacters(message.message) + "\"><![CDATA[" + message.line + ':' + message.col + ':' + escapeSpecialCharacters(message.evidence)  + "]]></" + type + ">");
+                    output.push("<" + type + " message=\"" + escapeSpecialCharacters(message.message) + "\"><![CDATA[" + message.line + ":" + message.col + ":" + escapeSpecialCharacters(message.evidence)  + "]]></" + type + ">");
                     output.push("</testcase>");
 
                     tests[type] += 1;

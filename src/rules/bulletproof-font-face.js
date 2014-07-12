@@ -2,7 +2,7 @@
  * Rule: Use the bulletproof @font-face syntax to avoid 404's in old IE
  * (http://www.fontspring.com/blog/the-new-bulletproof-font-face-syntax)
  */
-/*global CSSLint*/
+
 CSSLint.addRule({
 
     //rule information
@@ -13,15 +13,15 @@ CSSLint.addRule({
 
     //initialization
     init: function(parser, reporter){
+        "use strict";
         var rule = this,
-            count = 0,
             fontFaceRule = false,
             firstSrc     = true,
             ruleFailed    = false,
             line, col;
 
         // Mark the start of a @font-face declaration so we only test properties inside it
-        parser.addListener("startfontface", function(event){
+        parser.addListener("startfontface", function(){
             fontFaceRule = true;
         });
 
@@ -39,7 +39,7 @@ CSSLint.addRule({
             col  = event.col;
 
             // This is the property that we care about, we can ignore the rest
-            if (propertyName === 'src') {
+            if (propertyName === "src") {
                 var regex = /^\s?url\(['"].+\.eot\?.*['"]\)\s*format\(['"]embedded-opentype['"]\).*$/i;
 
                 // We need to handle the advanced syntax with two src properties
@@ -55,7 +55,7 @@ CSSLint.addRule({
         });
 
         // Back to normal rules that we don't need to test
-        parser.addListener("endfontface", function(event){
+        parser.addListener("endfontface", function(){
             fontFaceRule = false;
 
             if (ruleFailed) {

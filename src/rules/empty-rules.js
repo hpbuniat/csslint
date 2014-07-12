@@ -1,7 +1,7 @@
 /*
  * Rule: Style rules without any properties defined should be removed.
  */
-/*global CSSLint*/
+
 CSSLint.addRule({
 
     //rule information
@@ -12,6 +12,7 @@ CSSLint.addRule({
 
     //initialization
     init: function(parser, reporter){
+        "use strict";
         var rule = this,
             count = 0;
 

@@ -1,7 +1,7 @@
 /*
  * Rule: When using a vendor-prefixed gradient, make sure to use them all.
  */
-/*global CSSLint*/
+
 CSSLint.addRule({
 
     //rule information
@@ -12,6 +12,7 @@ CSSLint.addRule({
 
     //initialization
     init: function(parser, reporter){
+        "use strict";
         var rule = this,
             gradients;
 
@@ -44,7 +45,7 @@ CSSLint.addRule({
             if (!gradients.webkit){
                 missing.push("Webkit (Safari 5+, Chrome)");
             }
-            
+
             if (!gradients.oldWebkit){
                 missing.push("Old Webkit (Safari 4+, Chrome)");
             }
@@ -53,8 +54,8 @@ CSSLint.addRule({
                 missing.push("Opera 11.1+");
             }
 
-            if (missing.length && missing.length < 4){            
-                reporter.report("Missing vendor-prefixed CSS gradients for " + missing.join(", ") + ".", event.selectors[0].line, event.selectors[0].col, rule); 
+            if (missing.length && missing.length < 4){
+                reporter.report("Missing vendor-prefixed CSS gradients for " + missing.join(", ") + ".", event.selectors[0].line, event.selectors[0].col, rule);
             }
 
         });

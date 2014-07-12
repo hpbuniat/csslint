@@ -2,7 +2,7 @@
  * Rule: You shouldn't use more than 10 floats. If you do, there's probably
  * room for some abstraction.
  */
-/*global CSSLint*/
+
 CSSLint.addRule({
 
     //rule information
@@ -13,13 +13,14 @@ CSSLint.addRule({
 
     //initialization
     init: function(parser, reporter){
+        "use strict";
         var rule = this;
         var count = 0;
 
         //count how many times "float" is used
         parser.addListener("property", function(event){
-            if (event.property.text.toLowerCase() == "float" &&
-                    event.value.text.toLowerCase() != "none"){
+            if (event.property.text.toLowerCase() === "float" &&
+                    event.value.text.toLowerCase() !== "none"){
                 count++;
             }
         });

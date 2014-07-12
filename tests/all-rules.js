@@ -7,15 +7,18 @@
  * When run in addition to the other tests, this causes the Rhino CLI test
  * to fail due to Java stack overflow. This must be run separate from other tests.
  */
+
+/*jshint loopfunc: true */
+
 (function(){
-    /*jshint loopfunc: true */
-    /*global YUITest, CSSLint*/
+    "use strict";
     var Assert = YUITest.Assert,
         suite   = new YUITest.TestSuite("General Tests for all Rules"),
         rules   = CSSLint.getRules(),
-        i, len;
+        len     = rules.length,
+        i;
 
-    for (i=0, len=25; i < len; i++){
+    for (i=0; i < len; i++){
 
         (function(i, rules){
 

@@ -4,8 +4,12 @@
  * @static
  * @extends parserlib.util.EventTarget
  */
-/*global parserlib, Reporter*/
+
+/* global parserlib, clone, Reporter */
+/* exported CSSLint */
+
 var CSSLint = (function(){
+    "use strict";
 
     var rules           = [],
         formatters      = [],
@@ -170,8 +174,7 @@ var CSSLint = (function(){
      */
     api.verify = function(text, ruleset){
 
-        var i       = 0,
-            len     = rules.length,
+        var i = 0,
             reporter,
             lines,
             report,
@@ -179,13 +182,15 @@ var CSSLint = (function(){
                                                 underscoreHack: true, strict: false });
 
         // normalize line endings
-        lines = text.replace(/\n\r?/g, "$split$").split('$split$');
+        lines = text.replace(/\n\r?/g, "$split$").split("$split$");
 
         if (!ruleset){
             ruleset = this.getRuleset();
         }
 
         if (embeddedRuleset.test(text)){
+            //defensively copy so that caller's version does not get modified
+            ruleset = clone(ruleset);
             ruleset = applyEmbeddedRuleset(text, ruleset);
         }
 

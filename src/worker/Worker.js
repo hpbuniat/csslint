@@ -1,11 +1,11 @@
 /*
  * Web worker for CSSLint
  */
-/*global self, CSSLint, JSON*/
+/*global self, JSON*/
 //message indicates to start linting
 self.onmessage = function(event){
-
-    var data    = event.data,
+    "use strict";
+    var data = event.data,
         message,
         text,
         ruleset,
@@ -18,7 +18,7 @@ self.onmessage = function(event){
     } catch (ex){
         text = data;
     }
-        
+
     results = CSSLint.verify(text, ruleset);
 
     //Not all browsers support structured clone, so JSON stringify results
